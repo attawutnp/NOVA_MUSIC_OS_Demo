@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova Music OS v4.0 — Unified Workflow</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#04060A;--deep:#090C14;--surface:#0E1119;--card:#141824;--elev:#1B1F30;
+  --hover:#232840;--bs:rgba(255,255,255,.04);--bd:rgba(255,255,255,.07);
+  --ba:rgba(99,179,237,.35);--bw:rgba(246,173,85,.35);
+  --t1:#E8ECF4;--t2:#8891A8;--t3:#4E5468;--t4:#363B4E;
+  --blue:#63B3ED;--cyan:#4FD1C5;--purple:#A78BFA;--violet:#8B5CF6;
+  --orange:#F6AD55;--amber:#FBBF24;--pink:#F687B3;--green:#68D391;
+  --emerald:#34D399;--red:#FC8181;--rose:#F43F5E;--lime:#A3E635;
+  --r:10px;--rs:6px;--rl:14px;--rxl:18px;
+  --e:cubic-bezier(.4,0,.2,1);--sp:cubic-bezier(.34,1.56,.64,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--void);color:var(--t1);min-height:100vh;overflow-x:hidden;line-height:1.55}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--t3);border-radius:3px}
+button{cursor:pointer;border:none;background:none;font-family:inherit}input,textarea,select{font-family:inherit}
+
+.amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.amb .o{position:absolute;border-radius:50%;filter:blur(150px);opacity:.06;animation:dr 28s ease-in-out infinite}
+.amb .o:nth-child(1){width:700px;height:700px;background:var(--blue);top:-12%;left:-6%}
+.amb .o:nth-child(2){width:500px;height:500px;background:var(--purple);top:40%;right:-10%;animation-delay:-10s}
+.amb .o:nth-child(3){width:400px;height:400px;background:var(--cyan);bottom:-6%;left:30%;animation-delay:-18s}
+@keyframes dr{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(20px,-30px) scale(1.05)}66%{transform:translate(-15px,18px) scale(.95)}}
+.gbg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);background-size:64px 64px}
+
+/* SHELL */
+.shell{position:relative;z-index:1;display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sb{width:250px;flex-shrink:0;background:var(--deep);border-right:1px solid var(--bs);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sb-logo{padding:16px;border-bottom:1px solid var(--bs);display:flex;align-items:center;gap:10px}
+.logo-m{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--violet));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Sora';font-weight:800;font-size:14px;color:#fff;box-shadow:0 0 20px rgba(99,179,237,.12)}
+.logo-t{font-family:'Sora';font-weight:700;font-size:15px}.logo-t small{color:var(--t3);font-weight:400;font-size:10px;margin-left:4px}
+.sb-role{margin:12px 12px 4px}
+.role-sel{width:100%;padding:8px 10px;background:var(--card);border:1px solid var(--bd);border-radius:var(--rs);color:var(--t1);font-size:12px;font-weight:500;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%238891A8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.role-sel:focus{outline:none;border-color:var(--ba)}
+.sb-lbl{padding:14px 16px 4px;font-size:9px;font-family:'Space Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px}
+.sb-nav{display:flex;flex-direction:column;gap:1px;padding:4px 8px;flex:1;overflow-y:auto}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--rs);color:var(--t2);font-size:12px;font-weight:500;transition:all .2s var(--e);position:relative;white-space:nowrap}
+.ni:hover{background:var(--card);color:var(--t1)}
+.ni.active{background:var(--card);color:var(--t1);box-shadow:inset 3px 0 0 var(--blue)}
+.ni .ic{width:18px;text-align:center;font-size:12px;flex-shrink:0}
+.nb{margin-left:auto;padding:1px 6px;border-radius:8px;font-size:9px;font-family:'Space Mono',monospace;font-weight:700}
+.nb.c{background:rgba(99,179,237,.12);color:var(--blue)}.nb.g{background:rgba(104,211,145,.12);color:var(--green)}
+.sb-ft{padding:12px;border-top:1px solid var(--bs);display:flex;align-items:center;gap:8px}
+.av{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--purple),var(--pink));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.u-name{font-size:12px;font-weight:600}.u-role{font-size:9px;color:var(--t3);font-family:'Space Mono',monospace}
+
+/* MAIN */
+.mn{margin-left:250px;flex:1;display:flex;flex-direction:column}
+.tb{height:48px;border-bottom:1px solid var(--bs);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(4,6,10,.8);backdrop-filter:blur(14px);position:sticky;top:0;z-index:40}
+.tb-bc{font-size:12px;color:var(--t2)}.tb-bc strong{color:var(--t1);font-weight:600}
+.tb-r{display:flex;align-items:center;gap:12px}
+.sd{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pls 2s ease infinite}
+@keyframes pls{0%,100%{opacity:1}50%{opacity:.4}}
+.st{font-size:9px;font-family:'Space Mono',monospace;color:var(--t3)}
+
+.ct{padding:24px 28px 60px;flex:1}
+
+/* VIEWS */
+.vw{display:none;animation:vi .3s var(--e)}.vw.active{display:block}
+@keyframes vi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.vt{font-family:'Sora';font-size:22px;font-weight:700;letter-spacing:-.4px;margin-bottom:3px}
+.vs{font-size:13px;color:var(--t2);margin-bottom:24px}
+
+/* CARD */
+.cd{background:var(--card);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.cd-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bs)}
+.cd-t{font-family:'Sora';font-size:13px;font-weight:600}
+.cd-b{padding:18px}
+.cd-f{padding:12px 18px;border-top:1px solid var(--bs);display:flex;align-items:center;justify-content:space-between;gap:8px}
+
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:var(--rs);font-size:12px;font-weight:600;transition:all .2s var(--e);white-space:nowrap}
+.btn-p{background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff}
+.btn-p:hover{opacity:.88;transform:translateY(-1px)}.btn-p:disabled{opacity:.28;cursor:not-allowed;transform:none}
+.btn-s{background:var(--elev);border:1px solid var(--bd);color:var(--t2)}
+.btn-s:hover{border-color:var(--ba);color:var(--t1)}
+.btn-g{background:linear-gradient(135deg,var(--green),var(--emerald));color:#fff}
+.btn-g:hover{opacity:.88}.btn-g:disabled{opacity:.28;cursor:not-allowed}
+.btn-d{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.18);color:var(--rose)}
+.btn-lg{padding:10px 22px;font-size:13px;border-radius:var(--r)}
+.btn-sm{padding:4px 10px;font-size:10px}
+.btn-ic{width:30px;height:30px;padding:0;justify-content:center;border-radius:var(--rs)}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600}
+.badge::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor}
+.b-dra{background:rgba(78,84,104,.2);color:var(--t2)}.b-reg{background:rgba(99,179,237,.1);color:var(--blue)}
+.b-arr{background:rgba(167,139,250,.1);color:var(--purple)}.b-rec{background:rgba(246,173,85,.1);color:var(--orange)}
+.b-mix{background:rgba(79,209,197,.1);color:var(--cyan)}.b-mas{background:rgba(251,191,36,.1);color:var(--amber)}
+.b-rel{background:rgba(104,211,145,.1);color:var(--green)}.b-rej{background:rgba(244,63,94,.1);color:var(--rose)}
+
+/* FORM */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:9px;font-family:'Space Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.fi,.fta,.fsl{width:100%;padding:9px 12px;background:var(--elev);border:1px solid var(--bd);border-radius:var(--rs);color:var(--t1);font-size:12px;transition:border-color .2s var(--e)}
+.fi:focus,.fta:focus,.fsl:focus{outline:none;border-color:var(--ba)}
+.fta{resize:vertical;min-height:80px;line-height:1.6}
+.fsl{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%238891A8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fh{font-size:9px;color:var(--t3);margin-top:3px}
+
+/* GATE */
+.gate{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--elev);border-radius:var(--rs);margin-bottom:5px;transition:all .2s var(--e)}
+.gate:last-child{margin-bottom:0}
+.gate.click{cursor:pointer}.gate.click:hover{background:var(--hover)}
+.gate-i{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.gate-nfo{flex:1}.gate-n{font-size:11px;font-weight:600}.gate-sp{font-size:8px;color:var(--t3);font-family:'Space Mono',monospace}
+.gate-st{padding:1px 6px;border-radius:3px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.gate-st.pass{background:rgba(104,211,145,.1);color:var(--green)}.gate-st.fail{background:rgba(244,63,94,.1);color:var(--rose)}
+.gate-st.pending{background:rgba(246,173,85,.1);color:var(--orange)}.gate-st.locked{background:rgba(78,84,104,.2);color:var(--t3)}
+
+/* DNA */
+.dna-tags{display:flex;flex-wrap:wrap;gap:5px}
+.dna{display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:3px;background:var(--elev);font-size:10px;font-family:'Space Mono',monospace}
+.dna .k{color:var(--t3)}.dna .v{color:var(--t1);font-weight:700}
+
+/* COMMIT */
+.cmt{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:4px;background:var(--elev);margin-bottom:4px;font-size:10px}
+.cmt:last-child{margin-bottom:0}
+.c-h{font-family:'Space Mono',monospace;font-size:8px;color:var(--blue);background:rgba(99,179,237,.06);padding:1px 4px;border-radius:2px}
+.c-m{color:var(--t2);flex:1}.c-t{font-size:8px;color:var(--t3);font-family:'Space Mono',monospace}
+
+/* DROP */
+.drop{border:2px dashed var(--bd);border-radius:var(--r);padding:24px;text-align:center;transition:all .2s var(--e);cursor:pointer}
+.drop:hover{border-color:var(--ba);background:rgba(99,179,237,.02)}
+.drop.ok{border-color:var(--green);border-style:solid;background:rgba(104,211,145,.03)}
+.drop .di{font-size:28px;margin-bottom:6px}.drop .dt{font-size:12px;color:var(--t2)}.drop .dh{font-size:9px;color:var(--t3);margin-top:3px}
+.drop .df{font-size:11px;color:var(--green);font-weight:600;margin-top:6px}
+
+/* WAVEFORM */
+.wf{height:40px;background:var(--elev);border-radius:5px;overflow:hidden;display:flex;align-items:center;gap:1px;padding:0 6px}
+.wf-b{flex:1;border-radius:1px;opacity:.6}
+
+/* QC METER */
+.qm{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.qm-l{width:80px;font-size:10px;color:var(--t2);text-align:right;flex-shrink:0}
+.qm-t{flex:1;height:18px;background:var(--card);border-radius:3px;overflow:hidden;position:relative}
+.qm-f{height:100%;border-radius:3px;transition:width 1s var(--e)}
+.qm-v{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:8px;font-family:'Space Mono',monospace;font-weight:700;color:#fff}
+.qm-s{width:50px;font-size:8px;font-family:'Space Mono',monospace;color:var(--t3);text-align:right;flex-shrink:0}
+
+/* SPLIT */
+.sp-bar{height:26px;border-radius:5px;display:flex;overflow:hidden;margin-bottom:8px}
+.sp-seg{display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff}
+.sp-leg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.sp-li{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--t2)}
+.sp-dot{width:7px;height:7px;border-radius:2px}
+.sig{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--elev);border-radius:var(--rs);margin-bottom:3px;cursor:pointer;transition:all .2s var(--e)}
+.sig:hover{background:var(--hover)}
+.sig-n{font-size:11px}.sig-s{font-size:9px;font-weight:700}.sig-s.y{color:var(--green)}.sig-s.n{color:var(--orange)}
+
+/* SONG TABLE */
+.stbl{width:100%;border-collapse:collapse}
+.stbl thead th{padding:8px 14px;text-align:left;font-size:9px;font-family:'Space Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--bd);font-weight:400}
+.stbl tbody tr{transition:background .2s var(--e);cursor:pointer}
+.stbl tbody tr:hover{background:var(--hover)}
+.stbl tbody td{padding:10px 14px;font-size:12px;border-bottom:1px solid var(--bs)}
+.sc{display:flex;align-items:center;gap:10px}
+.sa{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.sn{font-weight:600;font-size:12px}.sar{font-size:10px;color:var(--t2)}
+.mono{font-family:'Space Mono',monospace;font-size:10px;color:var(--t3)}
+.pm{width:70px;height:3px;background:var(--void);border-radius:2px;overflow:hidden}.pm-f{height:100%;border-radius:2px}
+
+/* PIPELINE */
+.pipe{display:flex;align-items:flex-start;gap:0;padding:16px 0;overflow-x:auto}
+.ps{display:flex;flex-direction:column;align-items:center;min-width:80px;flex:1;position:relative}
+.ps:not(:last-child)::after{content:'';position:absolute;top:16px;left:calc(50% + 18px);width:calc(100% - 36px);height:2px;background:var(--bd);transition:background .4s var(--e)}
+.ps.done:not(:last-child)::after{background:var(--green)}.ps.cur:not(:last-child)::after{background:linear-gradient(90deg,var(--blue),var(--bd))}
+.pd{width:32px;height:32px;border-radius:50%;background:var(--elev);border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:13px;z-index:2;transition:all .25s var(--e)}
+.ps.done .pd{background:rgba(104,211,145,.08);border-color:var(--green)}.ps.cur .pd{background:rgba(99,179,237,.08);border-color:var(--blue);box-shadow:0 0 14px rgba(99,179,237,.18)}
+.ps.lk .pd{opacity:.3}
+.pl{margin-top:5px;font-size:8px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;text-align:center}
+.ps.done .pl{color:var(--green)}.ps.cur .pl{color:var(--blue)}
+.pt{font-size:8px;font-family:'Space Mono',monospace;color:var(--t3);margin-top:1px}
+
+/* WORKFLOW RAIL in sidebar */
+.wf-rail{padding:6px 8px;display:flex;flex-direction:column;gap:1px}
+.wr-item{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:var(--rs);font-size:11px;color:var(--t3);transition:all .2s var(--e);cursor:pointer}
+.wr-item:hover{background:var(--card);color:var(--t2)}
+.wr-item.done{color:var(--green)}.wr-item.active{color:var(--blue);background:var(--card);font-weight:600}
+.wr-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0}
+.wr-item.done .wr-dot{background:var(--green);color:#fff;border-color:var(--green)}
+.wr-item.active .wr-dot{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* AI BOX */
+.ai-box{background:var(--elev);border-radius:var(--r);padding:24px;text-align:center;margin-bottom:14px}
+.ai-big{font-size:40px;margin-bottom:10px}.ai-tt{font-family:'Sora';font-size:15px;font-weight:700;margin-bottom:3px}
+.ai-sub{font-size:11px;color:var(--t2)}
+.ai-bar{height:5px;background:var(--card);border-radius:3px;margin-top:14px;overflow:hidden}
+.ai-bar-f{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--cyan));width:0%;transition:width 2s var(--e)}
+
+/* NOTICE */
+.notice{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--r);margin-bottom:16px;font-size:11px}
+.notice-info{background:rgba(99,179,237,.05);border:1px solid rgba(99,179,237,.12);color:var(--blue)}
+.notice-warn{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.12);color:var(--rose)}
+
+/* COMPLETE */
+.comp{text-align:center;padding:48px 0}
+.comp-i{font-size:64px;margin-bottom:16px;animation:bou .8s var(--sp)}
+@keyframes bou{0%{transform:scale(0)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+.comp-t{font-family:'Sora';font-size:28px;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.comp-s{font-size:14px;color:var(--t2);margin-bottom:24px}
+
+/* TOAST */
+.tc{position:fixed;bottom:16px;right:16px;z-index:300;display:flex;flex-direction:column;gap:5px}
+.toast{padding:8px 14px;border-radius:var(--r);font-size:11px;font-weight:600;animation:tin .3s var(--sp);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:320px}
+@keyframes tin{from{transform:translateX(24px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast-ok{background:var(--green);color:#0a2015}.toast-err{background:var(--rose);color:#fff}
+.toast-warn{background:var(--amber);color:#1a1500}.toast-info{background:var(--blue);color:#051525}
+
+/* RESPONSIVE */
+@media(max-width:900px){.sb{width:200px}.mn{margin-left:200px}.frow{grid-template-columns:1fr}}
+@media(max-width:640px){.sb{display:none}.mn{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="amb"><div class="o"></div><div class="o"></div><div class="o"></div></div>
+<div class="gbg"></div>
+
+<div class="shell">
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sb">
+  <div class="sb-logo"><div class="logo-m">N</div><div class="logo-t">Music OS <small>v4.0</small></div></div>
+  <div class="sb-role"><select class="role-sel" id="roleSel" onchange="A.setRole(this.value)">
+    <option value="HEAD_PRODUCER">👑 Head Producer</option><option value="LYRICIST">✍️ Lyricist</option>
+    <option value="ARRANGER">🎵 Arranger (Team A)</option><option value="MUSICIAN">🎸 Musician</option>
+    <option value="RECORDING_ENGINEER">🎤 Recording Eng (Team B)</option><option value="MIX_ENGINEER">🎛️ Mix Eng (Team C)</option>
+    <option value="MASTER_ENGINEER">💎 Mastering Eng (Team D)</option><option value="ADMIN_LEGAL">📋 Admin / Legal</option>
+    <option value="AI_SANDBOX">🤖 AI Sandbox</option>
+  </select></div>
+  <div class="sb-lbl">Overview</div>
+  <nav class="sb-nav">
+    <button class="ni active" data-v="dash" onclick="A.nav('dash')"><span class="ic">📊</span>Dashboard<span class="nb g">LIVE</span></button>
+    <button class="ni" data-v="songs" onclick="A.nav('songs')"><span class="ic">🏭</span>Song Factory<span class="nb c" id="nbSongs">0</span></button>
+  </nav>
+  <div class="sb-lbl">Workflow</div>
+  <nav class="sb-nav">
+    <button class="ni" data-v="wf" onclick="A.nav('wf')"><span class="ic">⚡</span>New Song Workflow</button>
+  </nav>
+  <div id="wfRail" class="wf-rail" style="display:none"></div>
+  <div class="sb-lbl">Reference</div>
+  <nav class="sb-nav">
+    <button class="ni" data-v="schema" onclick="A.nav('schema')"><span class="ic">🗄️</span>DB Schema</button>
+    <button class="ni" data-v="api" onclick="A.nav('api')"><span class="ic">🔌</span>API Endpoints</button>
+    <button class="ni" data-v="rbac" onclick="A.nav('rbac')"><span class="ic">🔐</span>RBAC Matrix</button>
+  </nav>
+  <div class="sb-ft"><div class="av" id="avI">P</div><div><div class="u-name" id="uName">Dr. Prin</div><div class="u-role" id="uRole">HEAD_PRODUCER</div></div></div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="mn">
+  <div class="tb"><div class="tb-bc">Nova Music OS / <strong id="tbView">Dashboard</strong></div><div class="tb-r"><div class="sd"></div><div class="st">STATE MACHINE v4</div></div></div>
+  <div class="ct">
+
+    <!-- DASHBOARD -->
+    <div class="vw active" id="v-dash">
+      <div class="vt">Production Dashboard</div><div class="vs">Real-time pipeline overview with Stage-Gate enforcement</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px" id="dashStats"></div>
+      <div class="cd"><div class="cd-h"><div class="cd-t">🏭 Stage-Gate Pipeline</div><span class="mono">STRICT SEQUENTIAL</span></div><div class="cd-b" style="overflow-x:auto"><div class="pipe" id="dashPipe"></div></div></div>
+      <div class="cd"><div class="cd-h"><div class="cd-t">Recent Activity</div></div><div class="cd-b" id="dashLog" style="max-height:220px;overflow-y:auto"></div></div>
+    </div>
+
+    <!-- SONG FACTORY -->
+    <div class="vw" id="v-songs">
+      <div class="vt">Song Factory</div><div class="vs">All Song Objects — click any row to inspect full state and advance</div>
+      <div id="songsNotice"></div>
+      <div class="cd">
+        <div class="cd-h"><div class="cd-t">Song Objects</div>
+          <div style="display:flex;gap:4px" id="songFilters"></div>
+        </div>
+        <table class="stbl"><thead><tr><th>Song ID</th><th>Title / Artist</th><th>Status</th><th>Genre</th><th>Progress</th><th>BPM</th></tr></thead><tbody id="songTbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- WORKFLOW -->
+    <div class="vw" id="v-wf"><div id="wfContent"></div></div>
+
+    <!-- SCHEMA -->
+    <div class="vw" id="v-schema"><div class="vt">Database Schema</div><div class="vs">Refactored tables for Song Objects, RBAC, versioning, and rights</div><div id="schemaC"></div></div>
+
+    <!-- API -->
+    <div class="vw" id="v-api"><div class="vt">API Endpoints</div><div class="vs">RESTful endpoints with Stage-Gate transitions and RBAC enforcement</div><div id="apiC"></div></div>
+
+    <!-- RBAC -->
+    <div class="vw" id="v-rbac"><div class="vt">RBAC Permission Matrix</div><div class="vs">Who can do what at each stage</div><div id="rbacC"></div></div>
+
+  </div>
+</div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)A.closeModal()">
+  <div id="modalC" style="background:var(--surface);border:1px solid var(--bd);border-radius:var(--rxl);width:680px;max-height:85vh;overflow-y:auto;animation:mi .3s var(--e)"></div>
+</div>
+@keyframes mi{from{transform:translateY(12px) scale(.98);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+
+<div class="tc" id="toasts"></div>
+
+<script>
+const A=(()=>{
+// ═══ ENUMS ═══
+const ST={DRAFT:'DRAFT',REGISTERED:'REGISTERED',ARRANGED:'ARRANGED',RECORDED:'RECORDED',MIXED:'MIXED',MASTERED:'MASTERED',RELEASED:'RELEASED'};
+const SO=[ST.DRAFT,ST.REGISTERED,ST.ARRANGED,ST.RECORDED,ST.MIXED,ST.MASTERED,ST.RELEASED];
+const SM={DRAFT:{l:'Draft',c:'var(--t2)',i:'📝',p:5},REGISTERED:{l:'Registered',c:'var(--blue)',i:'📋',p:15},ARRANGED:{l:'Arranged',c:'var(--purple)',i:'🎵',p:35},RECORDED:{l:'Recorded',c:'var(--orange)',i:'🎤',p:55},MIXED:{l:'Mixed',c:'var(--cyan)',i:'🎛️',p:72},MASTERED:{l:'Mastered',c:'var(--amber)',i:'💎',p:88},RELEASED:{l:'Released',c:'var(--green)',i:'🚀',p:100}};
+const BC={DRAFT:'b-dra',REGISTERED:'b-reg',ARRANGED:'b-arr',RECORDED:'b-rec',MIXED:'b-mix',MASTERED:'b-mas',RELEASED:'b-rel'};
+const RN={HEAD_PRODUCER:'Head Producer',LYRICIST:'Lyricist',ARRANGER:'Arranger (Team A)',MUSICIAN:'Musician',RECORDING_ENGINEER:'Recording Eng (Team B)',MIX_ENGINEER:'Mix Eng (Team C)',MASTER_ENGINEER:'Mastering Eng (Team D)',ADMIN_LEGAL:'Admin / Legal',AI_SANDBOX:'AI Sandbox'};
+const TR={
+  'DRAFT→REGISTERED':{roles:['HEAD_PRODUCER','LYRICIST'],gates:['lyrics_present','ai_demo_generated','sonic_dna_extracted']},
+  'REGISTERED→ARRANGED':{roles:['ARRANGER','HEAD_PRODUCER'],gates:['arrangement_uploaded','version_committed']},
+  'ARRANGED→RECORDED':{roles:['RECORDING_ENGINEER','HEAD_PRODUCER'],gates:['vocals_uploaded','file_format_valid']},
+  'RECORDED→MIXED':{roles:['MIX_ENGINEER','HEAD_PRODUCER'],gates:['stems_combined','mix_uploaded']},
+  'MIXED→MASTERED':{roles:['MASTER_ENGINEER','HEAD_PRODUCER'],gates:['lufs_pass','true_peak_pass','sample_rate_pass','silence_pass','creative_qc_approved']},
+  'MASTERED→RELEASED':{roles:['ADMIN_LEGAL','HEAD_PRODUCER'],gates:['split_sheet_complete','all_signatures_collected','chain_of_title_verified']}
+};
+const RBAC={HEAD_PRODUCER:{create:1,view_all:1,advance_any:1,approve_creative:1},LYRICIST:{create:1,advance_draft:1,ai_sandbox:1},ARRANGER:{advance_arrangement:1},MUSICIAN:{upload_tracks:1},RECORDING_ENGINEER:{advance_recording:1},MIX_ENGINEER:{advance_mix:1},MASTER_ENGINEER:{advance_master:1,approve_technical:1},ADMIN_LEGAL:{view_all:1,advance_release:1,manage_rights:1},AI_SANDBOX:{generate_demo:1,ai_sandbox:1}};
+
+// ═══ STATE ═══
+let role='HEAD_PRODUCER',view='dash',songs=[],log=[],idC=1000;
+// Workflow state
+let ws=0,wd={},wAi=false,wMusFiles=[],wArtOS=false,wQC=null,wSigs={label:0,composer:0,artist:0,producer:0},wGates={},wCommits=[];
+const WF_STEPS=[
+  {id:1,ph:'Pre-Production',l:'Lyrics & Ideation',i:'✍️',r:'Lyricist'},
+  {id:2,ph:'Pre-Production',l:'AI Demo Generation',i:'🤖',r:'AI Sandbox'},
+  {id:3,ph:'Pre-Production',l:'Song Registration',i:'📋',r:'Lyricist / Producer'},
+  {id:4,ph:'Production',l:'Arrangement (Team A)',i:'🎵',r:'Arranger'},
+  {id:5,ph:'Production',l:'Musician Recording',i:'🎸',r:'Musician'},
+  {id:6,ph:'Production',l:'Vocal Recording (Team B)',i:'🎤',r:'Recording Eng'},
+  {id:7,ph:'Post-Production',l:'Mixing (Team C)',i:'🎛️',r:'Mix Engineer'},
+  {id:8,ph:'Post-Production',l:'Mastering & QC (Team D)',i:'💎',r:'Mastering Eng'},
+  {id:9,ph:'Release',l:'Rights & Release',i:'🚀',r:'Admin / Legal'},
+];
+
+function gid(){idC++;return`NV-2026-${String(idC).padStart(4,'0')}`}
+function hsh(){return Math.random().toString(36).substr(2,7)}
+function ts(){return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}
+function toast(m,t='info'){const e=document.createElement('div');e.className=`toast toast-${t==='success'?'ok':t}`;e.textContent=m;document.getElementById('toasts').appendChild(e);setTimeout(()=>e.remove(),3500)}
+function wv(n=60){return Array.from({length:n},()=>Math.random()*80+10)}
+
+// ═══ SEED ═══
+function seed(){
+  const sd=[
+    {t:'ลมหายใจสุดท้าย',a:'Kwan Usamanee',s:ST.RELEASED,g:'Thai Pop Ballad',bpm:78,k:'Eb Min',mo:'Melancholy',e:4,art:'🌙',bg:'linear-gradient(135deg,#1a1040,#2d1b69)'},
+    {t:'เมื่อวานที่ผ่านพ้น',a:'Ton Thanapol',s:ST.MASTERED,g:"70's Duet",bpm:112,k:'G Maj',mo:'Nostalgic',e:6,art:'🎷',bg:'linear-gradient(135deg,#1a3040,#0d4a4a)'},
+    {t:'Dancing in Bangkok',a:'Mint Naree',s:ST.RECORDED,g:'Thai Dance Pop',bpm:128,k:'A Min',mo:'Energetic',e:9,art:'💃',bg:'linear-gradient(135deg,#3a1040,#691b4a)'},
+    {t:'ฝันถึงเธอ',a:'Beam Papangkorn',s:ST.ARRANGED,g:'R&B Thai',bpm:92,k:'F# Min',mo:'Dreamy',e:5,art:'✨',bg:'linear-gradient(135deg,#102040,#1b3069)'},
+    {t:'คืนนี้ไม่มีดาว',a:'Faye Fang Kaew',s:ST.MIXED,g:'Thai Indie',bpm:135,k:'C Min',mo:'Dark',e:7,art:'🌃',bg:'linear-gradient(135deg,#0a0a20,#1a1a40)'},
+    {t:'เพลงรักจากใจ',a:'Ploy & Krit',s:ST.REGISTERED,g:"70's Duet Revival",bpm:98,k:'D Maj',mo:'Romantic',e:5,art:'❤️',bg:'linear-gradient(135deg,#401020,#691b2b)'},
+    {t:'Neon Skyline',a:'DJ Siam',s:ST.DRAFT,g:'Electronic Fusion',bpm:140,k:'Bb Min',mo:'Futuristic',e:10,art:'🌆',bg:'linear-gradient(135deg,#0a2030,#003050)'},
+  ];
+  sd.forEach(x=>{const si=SO.indexOf(x.s);songs.push({id:gid(),title:x.t,artist:x.a,status:x.s,genre:x.g,bpm:x.bpm,key:x.k,mood:x.mo,energy:x.e,art:x.art,bg:x.bg,density:Math.floor(Math.random()*5)+3,
+    gates:bGates(x.s),qc:si>=4?{truePeak:{v:'-1.2dBTP',s:'≤-1.0dBTP',p:1},lufs:{v:'-14.1LUFS',s:'-14±1LUFS',p:1},sampleRate:{v:'48kHz/24b',s:'48kHz WAV',p:1},silence:{v:si>=5?'0.6s':'0.2s',s:'≥0.5s',p:si>=5?1:0}}:null,
+    split:{label:40,composer:25,artist:20,producer:15,signed:x.s===ST.RELEASED},
+    commits:[{h:hsh(),m:'Song Object created',t:'Feb 10'},{h:hsh(),m:'AI Demo generated',t:'Feb 11'},...(si>=2?[{h:hsh(),m:'Arrangement committed',t:'Feb 12'}]:[]),...(si>=3?[{h:hsh(),m:'Vocal uploaded',t:'Feb 13'}]:[]),...(si>=4?[{h:hsh(),m:'Mix delivered',t:'Feb 14'}]:[]),...(si>=5?[{h:hsh(),m:'Master QC passed',t:'Feb 15'}]:[])],
+  })});
+  log=[{t:'16:42',m:'NV-2026-1001 released',y:'success'},{t:'16:30',m:'Master QC failed — tail silence',y:'error'},{t:'16:15',m:'Vocal uploaded for "Dancing in Bangkok"',y:'info'},{t:'15:50',m:'AI Demo for "Neon Skyline"',y:'info'}];
+}
+function bGates(s){const i=SO.indexOf(s);return{lyrics_present:i>=1?'pass':'pending',ai_demo_generated:i>=1?'pass':'pending',sonic_dna_extracted:i>=1?'pass':'pending',arrangement_uploaded:i>=2?'pass':i===1?'pending':'locked',version_committed:i>=2?'pass':i===1?'pending':'locked',file_format_valid:i>=3?'pass':i===2?'pending':'locked',vocals_uploaded:i>=3?'pass':i===2?'pending':'locked',stems_combined:i>=4?'pass':i===3?'pending':'locked',mix_uploaded:i>=4?'pass':i===3?'pending':'locked',lufs_pass:i>=5?'pass':i===4?'pending':'locked',true_peak_pass:i>=5?'pass':i===4?'pending':'locked',sample_rate_pass:i>=5?'pass':i===4?'pending':'locked',silence_pass:i>=5?'pass':i===4?'fail':'locked',creative_qc_approved:i>=5?'pass':i===4?'pending':'locked',split_sheet_complete:i>=6?'pass':i===5?'pending':'locked',all_signatures_collected:i>=6?'pass':i===5?'pending':'locked',chain_of_title_verified:i>=6?'pass':i===5?'pending':'locked'}}
+
+// ═══ NAV ═══
+function nav(v){
+  view=v;document.querySelectorAll('.vw').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('v-'+v);if(el)el.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>{n.classList.toggle('active',n.dataset.v===v)});
+  const names={dash:'Dashboard',songs:'Song Factory',wf:'Workflow',schema:'DB Schema',api:'API Endpoints',rbac:'RBAC Matrix'};
+  document.getElementById('tbView').textContent=names[v]||v;
+  document.getElementById('wfRail').style.display=v==='wf'?'flex':'none';
+  if(v==='dash')rDash();if(v==='songs')rSongs();if(v==='wf')rWF();if(v==='schema')rSchema();if(v==='api')rAPI();if(v==='rbac')rRBAC();
+}
+function setRole(r){role=r;const nm={HEAD_PRODUCER:'Producer A',LYRICIST:'Lyricist A',ARRANGER:'Team A Lead',MUSICIAN:'Session Player',RECORDING_ENGINEER:'Team B Lead',MIX_ENGINEER:'Team C Lead',MASTER_ENGINEER:'Team D Lead',ADMIN_LEGAL:'Legal Dept.',AI_SANDBOX:'AI Agent'};const ini={HEAD_PRODUCER:'P',LYRICIST:'A',ARRANGER:'A',MUSICIAN:'M',RECORDING_ENGINEER:'R',MIX_ENGINEER:'X',MASTER_ENGINEER:'D',ADMIN_LEGAL:'L',AI_SANDBOX:'🤖'};document.getElementById('uName').textContent=nm[r]||r;document.getElementById('uRole').textContent=r;document.getElementById('avI').textContent=ini[r]||'?';toast('Role: '+RN[r],'info');if(view==='wf')rWF();if(view==='songs')rSongs();}
+
+// ═══ DASHBOARD ═══
+function rDash(){
+  const ip=songs.filter(s=>[ST.REGISTERED,ST.ARRANGED,ST.RECORDED,ST.MIXED].includes(s.status)).length;
+  const rel=songs.filter(s=>s.status===ST.RELEASED).length;
+  const pg=songs.reduce((c,s)=>c+Object.values(s.gates).filter(g=>g==='pending'||g==='fail').length,0);
+  document.getElementById('dashStats').innerHTML=[
+    ['var(--blue)',songs.length,'Total Songs'],['var(--purple)',ip,'In Production'],['var(--green)',rel,'Released'],['var(--orange)',pg,'Pending Gates']
+  ].map(([c,v,l])=>`<div class="cd"><div class="cd-b" style="text-align:center"><div style="font-family:'Sora';font-size:28px;font-weight:800;color:${c}">${v}</div><div style="font-size:11px;color:var(--t2)">${l}</div></div></div>`).join('');
+  const cnt={};SO.forEach(s=>cnt[s]=songs.filter(x=>x.status===s).length);
+  document.getElementById('dashPipe').innerHTML=SO.map(s=>`<div class="ps ${cnt[s]>0?'cur':''}"><div class="pd">${SM[s].i}</div><div class="pl">${SM[s].l}</div><div class="pt" style="color:${SM[s].c};font-weight:700">${cnt[s]}</div></div>`).join('');
+  document.getElementById('dashLog').innerHTML=log.slice(0,8).map(a=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bs)"><span style="font-size:12px">${a.y==='success'?'✅':a.y==='error'?'❌':'ℹ️'}</span><span style="font-size:11px;color:var(--t2);flex:1">${a.m}</span><span class="mono">${a.t}</span></div>`).join('');
+  document.getElementById('nbSongs').textContent=songs.length;
+}
+
+// ═══ SONGS TABLE ═══
+let sf='all';
+function filterSongs(f){sf=f;rSongs()}
+function rSongs(){
+  const fl=sf==='all'?songs:songs.filter(s=>s.status===sf);
+  const canCreate=RBAC[role]?.create;
+  document.getElementById('songsNotice').innerHTML=!canCreate?'<div class="notice notice-warn">🔒 Your role cannot create songs. Use Workflow as Head Producer or Lyricist.</div>':'';
+  document.getElementById('songFilters').innerHTML=['all',...SO].map(f=>`<button class="btn btn-sm btn-s" onclick="A.filterSongs('${f}')">${f==='all'?'All':SM[f]?.l||f}</button>`).join('');
+  document.getElementById('songTbody').innerHTML=fl.map(s=>{const m=SM[s.status];return`<tr onclick="A.songModal('${s.id}')"><td><span class="mono">${s.id}</span></td><td><div class="sc"><div class="sa" style="background:${s.bg}">${s.art}</div><div><div class="sn">${s.title}</div><div class="sar">${s.artist}</div></div></div></td><td><span class="badge ${BC[s.status]}">${m.l}</span></td><td style="color:var(--t2);font-size:11px">${s.genre}</td><td><div class="pm"><div class="pm-f" style="width:${m.p}%;background:${m.c}"></div></div></td><td class="mono">${s.bpm}</td></tr>`}).join('');
+}
+
+// ═══ SONG MODAL ═══
+function songModal(id){
+  const s=songs.find(x=>x.id===id);if(!s)return;const m=SM[s.status];const si=SO.indexOf(s.status);const nx=si<SO.length-1?SO[si+1]:null;
+  let canAdv=false,reason='';
+  if(nx){const k=`${s.status}→${nx}`;const r=TR[k];if(!r)reason='No rule';else if(!r.roles.includes(role))reason=`Role ${RN[role]} cannot do ${k}`;else{let gOk=true;for(const g of r.gates)if(s.gates[g]!=='pass'){gOk=false;reason=`Gate "${g}" not passed`;break}if(gOk)canAdv=true;}}
+  document.getElementById('modalC').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--bs)"><div><div class="mono" style="margin-bottom:2px">${s.id}</div><div style="font-family:'Sora';font-size:16px;font-weight:700">${s.title}</div><div style="font-size:12px;color:var(--t2)">${s.artist}</div></div><button class="btn btn-ic btn-s" onclick="A.closeModal()">✕</button></div>
+    <div style="padding:22px">
+      <div class="pipe" style="padding:8px 0 16px">${SO.map((st,i)=>`<div class="ps ${i<si?'done':i===si?'cur':'lk'}"><div class="pd">${SM[st].i}</div><div class="pl">${SM[st].l}</div></div>`).join('')}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:var(--card);border-radius:var(--rs);padding:12px"><div class="fl">Status</div><div><span class="badge ${BC[s.status]}">${m.l}</span></div></div>
+        <div style="background:var(--card);border-radius:var(--rs);padding:12px"><div class="fl">Genre</div><div style="font-size:13px;font-weight:600">${s.genre}</div></div>
+      </div>
+      <div style="background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:14px"><div style="font-family:'Sora';font-size:12px;font-weight:600;color:var(--cyan);margin-bottom:8px">🧬 Sonic DNA</div><div class="dna-tags"><div class="dna"><span class="k">BPM</span><span class="v">${s.bpm}</span></div><div class="dna"><span class="k">KEY</span><span class="v">${s.key}</span></div><div class="dna"><span class="k">MOOD</span><span class="v">${s.mood}</span></div><div class="dna"><span class="k">ENERGY</span><span class="v">${s.energy}/10</span></div></div></div>
+      ${nx?`<div class="cd"><div class="cd-h"><div class="cd-t">🚧 Gates: ${s.status} → ${nx}</div><span class="mono">${canAdv?'✅ ALL PASS':'⏳ PENDING'}</span></div><div class="cd-b">${TR[`${s.status}→${nx}`]?.gates.map(g=>`<div class="gate click" onclick="A.toggleGate('${s.id}','${g}')"><div class="gate-i">${s.gates[g]==='pass'?'✅':s.gates[g]==='fail'?'❌':'⏳'}</div><div class="gate-nfo"><div class="gate-n">${g.replace(/_/g,' ')}</div><div class="gate-sp">Click to toggle (demo)</div></div><div class="gate-st ${s.gates[g]}">${s.gates[g].toUpperCase()}</div></div>`).join('')||''}</div></div>`:''
+      }
+      <div style="background:var(--card);border-radius:var(--r);padding:14px"><div style="font-family:'Sora';font-size:12px;font-weight:600;color:var(--purple);margin-bottom:8px">📜 Version History</div>${s.commits.slice().reverse().map(c=>`<div class="cmt"><span class="c-h">${c.h}</span><span class="c-m">${c.m}</span><span class="c-t">${c.t}</span></div>`).join('')}</div>
+    </div>
+    <div style="padding:14px 22px;border-top:1px solid var(--bs);display:flex;align-items:center;justify-content:space-between">
+      ${nx?`<div style="font-size:10px;color:var(--t3)">${canAdv?'✅ Ready':'🔒 '+reason}</div><button class="btn btn-g btn-lg" ${canAdv?'':`disabled`} onclick="A.advance('${s.id}');A.closeModal()">Advance → ${SM[nx].l}</button>`:'<div style="font-size:11px;color:var(--green)">🎉 Released — Lifecycle Complete</div>'}
+    </div>`;
+  const md=document.getElementById('modal');md.style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none'}
+function toggleGate(id,g){const s=songs.find(x=>x.id===id);if(!s)return;if(s.gates[g]==='locked'){toast('Gate locked','warn');return}s.gates[g]=s.gates[g]==='pass'?'pending':'pass';songModal(id)}
+function advance(id){const s=songs.find(x=>x.id===id);if(!s)return;const si=SO.indexOf(s.status);if(si>=SO.length-1)return;const nx=SO[si+1];s.status=nx;s.commits.push({h:hsh(),m:`Status → ${nx}`,t:ts()});log.unshift({t:ts(),m:`${s.id} "${s.title}" → ${nx}`,y:'success'});toast(`✓ ${s.title} → ${SM[nx].l}`,'ok');rDash()}
+
+// ═══════════════════════════════════════
+// WORKFLOW ENGINE (9 steps)
+// ═══════════════════════════════════════
+function resetWF(){ws=0;wd={};wAi=false;wMusFiles=[];wArtOS=false;wQC=null;wSigs={label:0,composer:0,artist:0,producer:0};wGates={};wCommits=[];rWF()}
+function rWF(){
+  // Rail
+  document.getElementById('wfRail').innerHTML=WF_STEPS.map((s,i)=>`<div class="wr-item ${s.id<ws+1?'done':s.id===ws+1?'active':''}" onclick="${s.id<=ws+1?`A.wfGo(${s.id-1})`:''}"><div class="wr-dot">${s.id<ws+1?'✓':s.id}</div>${s.l}</div>`).join('');
+  document.getElementById('wfRail').style.display='flex';
+  // Content
+  if(ws>=9){document.getElementById('wfContent').innerHTML=rComplete();return}
+  if(!RBAC[role]?.create && !RBAC[role]?.advance_any && ws===0){document.getElementById('wfContent').innerHTML=`<div class="vt">New Song Workflow</div><div class="vs">9-step Stage-Gate workflow</div><div class="notice notice-warn">🔒 Switch to Head Producer or Lyricist to start a new song workflow.</div>`;return}
+  const s=WF_STEPS[ws];
+  document.getElementById('wfContent').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="vt">${s.i} Step ${s.id}: ${s.l}</div><button class="btn btn-sm btn-s" onclick="A.resetWF()">↺ Reset</button></div>
+    <div class="vs">${s.ph} — Active Role: <strong>${s.r}</strong></div>
+    ${wfBody(ws)}`;
+}
+function wfGo(n){if(n>ws)return;ws=n;rWF()}
+function wfNext(){ws++;rWF()}
+
+function wfBody(n){
+  switch(n){
+  // ─── 1. LYRICS ───
+  case 0:return`
+    <div class="cd"><div class="cd-h"><div class="cd-t">📝 Lyrics & Concept</div></div><div class="cd-b">
+      <div class="frow"><div class="fg"><label class="fl">Song Title *</label><input class="fi" id="wTitle" placeholder="Song title..." value="${wd.title||''}"></div><div class="fg"><label class="fl">Artist *</label><input class="fi" id="wArtist" placeholder="Artist name..." value="${wd.artist||''}"></div></div>
+      <div class="frow"><div class="fg"><label class="fl">Genre</label><select class="fsl" id="wGenre"><option>Thai Pop Ballad</option><option>70's Duet Revival</option><option>Thai Dance Pop</option><option>R&B Thai</option><option>Thai Indie</option><option>Electronic Fusion</option></select></div><div class="fg"><label class="fl">Mood</label><select class="fsl" id="wMood"><option>Melancholy</option><option>Energetic</option><option>Nostalgic</option><option>Dreamy</option><option>Romantic</option><option>Futuristic</option></select></div></div>
+      <div class="fg"><label class="fl">Lyrics *</label><textarea class="fta" id="wLyrics" placeholder="Write lyrics here...">${wd.lyrics||''}</textarea></div>
+      <div class="fg"><label class="fl">Reference Track (optional)</label><div class="drop" id="refDrop" onclick="document.getElementById('refF').click()"><div class="di">📎</div><div class="dt">Attach reference track</div><div class="dh">.mp3 / .wav</div><input type="file" id="refF" accept=".mp3,.wav" style="display:none" onchange="A.wfRef(this)"></div></div>
+    </div><div class="cd-f"><div class="fh">* Required for lyrics_present gate</div><button class="btn btn-p btn-lg" onclick="A.wfSubmitLyrics()">Next → AI Demo 🤖</button></div></div>
+    <div class="cd"><div class="cd-h"><div class="cd-t">🚧 Pre-Registration Gates</div></div><div class="cd-b">
+      <div class="gate"><div class="gate-i">${wd.lyrics?'✅':'⏳'}</div><div class="gate-nfo"><div class="gate-n">Lyrics Present</div></div><div class="gate-st ${wd.lyrics?'pass':'pending'}">${wd.lyrics?'PASS':'PENDING'}</div></div>
+      <div class="gate"><div class="gate-i">⏳</div><div class="gate-nfo"><div class="gate-n">AI Demo Generated</div></div><div class="gate-st pending">PENDING</div></div>
+      <div class="gate"><div class="gate-i">🔒</div><div class="gate-nfo"><div class="gate-n">Sonic DNA Extracted</div></div><div class="gate-st locked">LOCKED</div></div>
+    </div></div>`;
+
+  // ─── 2. AI DEMO ───
+  case 1:return`
+    <div class="cd"><div class="cd-h"><div class="cd-t">🤖 AI Sandbox — Demo Generation</div><span class="mono">NO IP OWNERSHIP</span></div><div class="cd-b">
+      <div class="ai-box"><div class="ai-big" id="aiIco">${wAi?'✅':'🤖'}</div><div class="ai-tt" id="aiTt">${wAi?'Demo Generated':'Ready'}</div><div class="ai-sub" id="aiSb">${wAi?'Sonic DNA extracted':'Suno / Mureka API stub'}</div>
+        ${!wAi?`<div class="ai-bar"><div class="ai-bar-f" id="aiBar"></div></div><div style="margin-top:14px"><button class="btn btn-p btn-lg" onclick="A.wfRunAI()">🎵 Generate Demo</button></div>`:''}
+        ${wAi?`<div style="margin-top:14px;text-align:left"><div class="fl" style="margin-bottom:4px">Sonic DNA</div><div class="dna-tags"><div class="dna"><span class="k">BPM</span><span class="v">${wd.bpm}</span></div><div class="dna"><span class="k">KEY</span><span class="v">${wd.key}</span></div><div class="dna"><span class="k">MOOD</span><span class="v">${wd.mood}</span></div><div class="dna"><span class="k">ENERGY</span><span class="v">${wd.energy}/10</span></div></div>
+        <div style="margin-top:10px"><div class="fl" style="margin-bottom:4px">Waveform</div><div class="wf">${wv(80).map(h=>`<div class="wf-b" style="height:${h}%;background:var(--blue)"></div>`).join('')}</div></div></div>`:''}
+      </div>
+      <div class="gate"><div class="gate-i">ℹ️</div><div class="gate-nfo"><div class="gate-n">AI Prompt Logging</div><div class="gate-sp">All prompts stored as Song Object metadata</div></div><div class="gate-st pass">ACTIVE</div></div>
+    </div><div class="cd-f"><button class="btn btn-s" onclick="A.wfGo(0)">← Back</button><button class="btn btn-p btn-lg" ${!wAi?'disabled':''} onclick="A.wfNext()">Next → Register 📋</button></div></div>`;
+
+  // ─── 3. REGISTER ───
+  case 2:return`
+    <div class="cd"><div class="cd-h"><div class="cd-t">📋 Register Song Object</div><span class="badge b-reg">DRAFT → REGISTERED</span></div><div class="cd-b">
+      <div style="text-align:center;padding:16px 0"><div style="font-size:40px;margin-bottom:8px">📋</div><div style="font-family:'Sora';font-size:17px;font-weight:700;margin-bottom:10px">Song Object Ready</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:420px;margin:0 auto 14px"><div style="background:var(--elev);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:12px;font-weight:700;color:var(--blue)">${wd.id||'—'}</div><div style="font-size:8px;color:var(--t3)">Song ID</div></div><div style="background:var(--elev);border-radius:var(--rs);padding:10px"><div style="font-size:12px;font-weight:700">${wd.title||'—'}</div><div style="font-size:8px;color:var(--t3)">Title</div></div><div style="background:var(--elev);border-radius:var(--rs);padding:10px"><div style="font-size:12px;font-weight:700">${wd.artist||'—'}</div><div style="font-size:8px;color:var(--t3)">Artist</div></div></div>
+        <div class="dna-tags" style="justify-content:center"><div class="dna"><span class="k">BPM</span><span class="v">${wd.bpm||'—'}</span></div><div class="dna"><span class="k">KEY</span><span class="v">${wd.key||'—'}</span></div><div class="dna"><span class="k">MOOD</span><span class="v">${wd.mood||'—'}</span></div></div>
+      </div>
+      <div class="gate"><div class="gate-i">✅</div><div class="gate-nfo"><div class="gate-n">Lyrics Present</div></div><div class="gate-st pass">PASS</div></div>
+      <div class="gate"><div class="gate-i">✅</div><div class="gate-nfo"><div class="gate-n">AI Demo Generated</div></div><div class="gate-st pass">PASS</div></div>
+      <div class="gate"><div class="gate-i">✅</div><div class="gate-nfo"><div class="gate-n">Sonic DNA Extracted</div></div><div class="gate-st pass">PASS</div></div>
+    </div><div class="cd-f"><button class="btn btn-s" onclick="A.wfGo(1)">← Back</button><button class="btn btn-g btn-lg" onclick="A.wfRegister()">✓ Register Song Object</button></div></div>${rCmt()}`;
+
+  // ─── 4. ARRANGEMENT ───
+  case 3:return`
+    <div class="cd"><div class="cd-h"><div class="cd-t">🎵 Arrangement — Team A</div><span class="badge b-arr">REGISTERED → ARRANGED</span></div><div class="cd-b">
+      <div class="fg"><label class="fl">Arrangement File</label><div class="drop ${wGates.arr?'ok':''}" onclick="A.wfSimUp('arr','Arrangement v1 committed')"><div class="${wGates.arr?'df':'di'}">${wGates.arr?'✅ arrangement_v1.logicx':'🎵'}</div>${!wGates.arr?'<div class="dt">Upload arrangement</div><div class="dh">.logicx / .als / .ptx</div>':''}</div></div>
+      <div class="fg"><label class="fl">Commit Message *</label><input class="fi" id="arrMsg" placeholder="e.g. Added strings and rhythm" value="${wGates.ver?'Arrangement v1 — full structure':''}"></div>
+      ${!wGates.ver&&wGates.arr?`<button class="btn btn-s" onclick="A.wfCommit()">📌 Commit Version</button>`:''}
+    </div><div class="cd-f"><div class="fh">Both gates required</div><button class="btn btn-g btn-lg" ${!(wGates.arr&&wGates.ver)?'disabled':''} onclick="A.wfAdv(3)">Advance → Musician 🎸</button></div></div>${rGates([['arr','Arrangement Uploaded'],['ver','Version Committed']])}${rCmt()}`;
+
+  // ─── 5. MUSICIAN ───
+  case 4:return`
+    <div class="cd"><div class="cd-h"><div class="cd-t">🎸 Musician Recording</div><span class="mono">FORMAT AUTO-GATE</span></div><div class="cd-b">
+      <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Upload instrument tracks. Must be WAV 48kHz — other formats rejected.</p>
+      <div class="frow"><div class="fg"><select class="fsl" id="musF"><option value="wav48">WAV 48kHz ✓</option><option value="wav44">WAV 44.1kHz ✗</option><option value="mp3">MP3 320k ✗</option></select></div><div class="fg"><input class="fi" id="musN" placeholder="Track name"></div></div>
+      <button class="btn btn-s" onclick="A.wfMusUp()" style="margin-bottom:12px">⬆ Upload Track</button>
+      ${wMusFiles.map(f=>`<div class="gate"><div class="gate-i">${f.ok?'✅':'❌'}</div><div class="gate-nfo"><div class="gate-n">${f.n}</div><div class="gate-sp">${f.f}</div></div><div class="gate-st ${f.ok?'pass':'fail'}">${f.ok?'ACCEPTED':'REJECTED'}</div></div>`).join('')}
+    </div><div class="cd-f"><div class="fh">≥1 valid track required</div><button class="btn btn-g btn-lg" ${!wMusFiles.some(f=>f.ok)?'disabled':''} onclick="A.wfNext()">Next → Vocal 🎤</button></div></div>${rCmt()}`;
+
+  // ─── 6. VOCAL ───
+  case 5:return`
+    <div class="cd"><div class="cd-h"><div class="cd-t">🎤 Vocal Recording — Team B</div><span class="badge b-rec">ARRANGED → RECORDED</span></div><div class="cd-b">
+      <div class="fg"><div class="drop ${wGates.voc?'ok':''}" onclick="A.wfSimUp('voc','Vocal take uploaded')"><div class="${wGates.voc?'df':'di'}">${wGates.voc?'✅ vocal_final.wav':'🎤'}</div>${!wGates.voc?'<div class="dt">Upload vocal</div><div class="dh">WAV 48kHz</div>':''}</div></div>
+      ${wGates.voc?`<div class="cd" style="border-color:rgba(167,139,250,.2)"><div class="cd-h"><div class="cd-t" style="color:var(--purple)">🔌 Nova Artist OS</div><span class="mono">PLUGIN</span></div><div class="cd-b">${!wArtOS?`<div style="text-align:center"><button class="btn btn-p" onclick="A.wfArtOS()">Run Vocal Quality Check</button></div>`:
+      `<div class="qm"><div class="qm-l">Pitch</div><div class="qm-t"><div class="qm-f" style="width:94%;background:var(--green)"><span class="qm-v">94%</span></div></div><div class="qm-s">≥85%</div></div>
+       <div class="qm"><div class="qm-l">Timing</div><div class="qm-t"><div class="qm-f" style="width:91%;background:var(--green)"><span class="qm-v">91%</span></div></div><div class="qm-s">≥80%</div></div>
+       <div class="qm"><div class="qm-l">Tonal</div><div class="qm-t"><div class="qm-f" style="width:88%;background:var(--green)"><span class="qm-v">88%</span></div></div><div class="qm-s">≥75%</div></div>
+       <div class="qm"><div class="qm-l">Breath</div><div class="qm-t"><div class="qm-f" style="width:82%;background:var(--cyan)"><span class="qm-v">82%</span></div></div><div class="qm-s">≥70%</div></div>
+       <div class="gate" style="margin-top:8px"><div class="gate-i">✅</div><div class="gate-nfo"><div class="gate-n">Artist OS: PASS</div></div><div class="gate-st pass">PASS</div></div>`}</div></div>`:''}
+    </div><div class="cd-f"><div class="fh">Vocal + Artist OS required</div><button class="btn btn-g btn-lg" ${!(wGates.voc&&wGates.fmt)?'disabled':''} onclick="A.wfAdv(5)">Advance → Mixing 🎛️</button></div></div>${rCmt()}`;
+
+  // ─── 7. MIXING ───
+  case 6:return`
+    <div class="cd"><div class="cd-h"><div class="cd-t">🎛️ Mixing — Team C</div><span class="badge b-mix">RECORDED → MIXED</span></div><div class="cd-b">
+      <div class="gate ${!wGates.stems?'click':''}" ${!wGates.stems?`onclick="A.wfSimGate('stems','Stems loaded into session')"`:''}><div class="gate-i">${wGates.stems?'✅':'⏳'}</div><div class="gate-nfo"><div class="gate-n">Load All Stems</div><div class="gate-sp">Arrangement + ${wMusFiles.filter(f=>f.ok).length} tracks + vocal${!wGates.stems?' — click to load':''}</div></div><div class="gate-st ${wGates.stems?'pass':'pending'}">${wGates.stems?'PASS':'CLICK'}</div></div>
+      ${wGates.stems?`<div class="fg" style="margin-top:10px"><div class="fl">Mix Preview</div><div class="wf">${wv(100).map(h=>`<div class="wf-b" style="height:${h}%;background:var(--cyan)"></div>`).join('')}</div></div>`:''}
+      <div class="fg" style="margin-top:10px"><div class="drop ${wGates.mixUp?'ok':''}" onclick="A.wfSimUp('mixUp','Final mix delivered')"><div class="${wGates.mixUp?'df':'di'}">${wGates.mixUp?'✅ final_mix.wav':'🎛️'}</div>${!wGates.mixUp?'<div class="dt">Upload final mix</div>':''}</div></div>
+    </div><div class="cd-f"><button class="btn btn-g btn-lg" ${!(wGates.stems&&wGates.mixUp)?'disabled':''} onclick="A.wfAdv(6)">Advance → Mastering 💎</button></div></div>${rCmt()}`;
+
+  // ─── 8. MASTERING & QC ───
+  case 7:return`
+    <div class="cd"><div class="cd-h"><div class="cd-t">💎 Mastering — Team D</div><span class="badge b-mas">MIXED → MASTERED</span></div><div class="cd-b">
+      <div class="drop ${wQC?'ok':''}" onclick="A.wfMaster()"><div class="${wQC?'df':'di'}">${wQC?'✅ master_final.wav uploaded':'💎'}</div>${!wQC?'<div class="dt">Upload master (triggers QC)</div>':''}</div>
+    </div></div>
+    ${wQC?`
+    <div class="cd"><div class="cd-h"><div class="cd-t">🔬 Gate 1: Technical QC</div><span class="mono" style="color:${wQC.ok?'var(--green)':'var(--rose)'}">${wQC.ok?'ALL PASS':'FAILURE'}</span></div><div class="cd-b">
+      ${wQC.checks.map(c=>`<div class="qm"><div class="qm-l">${c.n}</div><div class="qm-t"><div class="qm-f" style="width:${c.pct}%;background:${c.p?'var(--green)':'var(--rose)'}"><span class="qm-v">${c.v}</span></div></div><div class="qm-s">${c.s}</div></div>`).join('')}
+      ${!wQC.ok?`<button class="btn btn-d" onclick="A.wfReQC()" style="margin-top:8px">🔄 Fix & Re-run QC</button>`:''}
+    </div></div>
+    <div class="cd"><div class="cd-h"><div class="cd-t">🎨 Gate 2: Creative QC</div></div><div class="cd-b">
+      <div class="gate click" onclick="A.wfCQC('emo')"><div class="gate-i">${wGates.cEmo?'✅':'⏳'}</div><div class="gate-nfo"><div class="gate-n">Emotional Standards</div><div class="gate-sp">Click to approve</div></div><div class="gate-st ${wGates.cEmo?'pass':'pending'}">${wGates.cEmo?'APPROVED':'PENDING'}</div></div>
+      <div class="gate click" onclick="A.wfCQC('qual')"><div class="gate-i">${wGates.cQual?'✅':'⏳'}</div><div class="gate-nfo"><div class="gate-n">Artistic Quality</div><div class="gate-sp">Click to approve</div></div><div class="gate-st ${wGates.cQual?'pass':'pending'}">${wGates.cQual?'APPROVED':'PENDING'}</div></div>
+    </div></div>
+    `:''}
+    <div class="cd"><div class="cd-f"><button class="btn btn-g btn-lg" ${!(wQC?.ok&&wGates.cEmo&&wGates.cQual)?'disabled':''} onclick="A.wfAdv(7)">Advance → Release 🚀</button></div></div>${rCmt()}`;
+
+  // ─── 9. RIGHTS ───
+  case 8:return`
+    <div class="cd"><div class="cd-h"><div class="cd-t">⚖️ Smart Split Sheet</div><span class="badge b-rel">MASTERED → RELEASED</span></div><div class="cd-b">
+      <div class="sp-bar"><div class="sp-seg" style="width:40%;background:var(--blue)">40%</div><div class="sp-seg" style="width:25%;background:var(--purple)">25%</div><div class="sp-seg" style="width:20%;background:var(--cyan)">20%</div><div class="sp-seg" style="width:15%;background:var(--orange)">15%</div></div>
+      <div class="sp-leg"><div class="sp-li"><div class="sp-dot" style="background:var(--blue)"></div>Label 40%</div><div class="sp-li"><div class="sp-dot" style="background:var(--purple)"></div>Composer 25%</div><div class="sp-li"><div class="sp-dot" style="background:var(--cyan)"></div>Artist 20%</div><div class="sp-li"><div class="sp-dot" style="background:var(--orange)"></div>Producer 15%</div></div>
+      <div class="fl" style="margin:12px 0 4px">Digital Signatures (click to sign)</div>
+      ${['label','composer','artist','producer'].map(w=>`<div class="sig" onclick="A.wfSign('${w}')"><span class="sig-n">${{label:'📋 Record Label',composer:'✍️ Composer',artist:'🎤 Artist',producer:'🎧 Producer'}[w]}</span><span class="sig-s ${wSigs[w]?'y':'n'}">${wSigs[w]?'✓ Signed':'Click to Sign'}</span></div>`).join('')}
+    </div></div>
+    <div class="cd"><div class="cd-h"><div class="cd-t">🚧 Release Gates</div></div><div class="cd-b">
+      <div class="gate"><div class="gate-i">${wGates.splitOk?'✅':'⏳'}</div><div class="gate-nfo"><div class="gate-n">Split Sheet Complete</div></div><div class="gate-st ${wGates.splitOk?'pass':'pending'}">${wGates.splitOk?'PASS':'PENDING'}</div></div>
+      <div class="gate"><div class="gate-i">${allSig()?'✅':'⏳'}</div><div class="gate-nfo"><div class="gate-n">All Signatures</div><div class="gate-sp">${Object.values(wSigs).filter(Boolean).length}/4</div></div><div class="gate-st ${allSig()?'pass':'pending'}">${allSig()?'PASS':'PENDING'}</div></div>
+      <div class="gate ${!wGates.chain?'click':''}" ${!wGates.chain?'onclick="A.wfChain()"':''}><div class="gate-i">${wGates.chain?'✅':'⏳'}</div><div class="gate-nfo"><div class="gate-n">Chain of Title</div><div class="gate-sp">${wGates.chain?'Verified':'Click to verify'}</div></div><div class="gate-st ${wGates.chain?'pass':'pending'}">${wGates.chain?'PASS':'CLICK'}</div></div>
+    </div></div>
+    <div class="cd"><div class="cd-f"><button class="btn btn-g btn-lg" ${!(allSig()&&wGates.splitOk&&wGates.chain)?'disabled':''} onclick="A.wfRelease()">🚀 Release Song</button></div></div>${rCmt()}`;
+  }
+}
+function allSig(){return Object.values(wSigs).every(Boolean)}
+function rGates(gs){return`<div class="cd"><div class="cd-h"><div class="cd-t">🚧 Gates</div></div><div class="cd-b">${gs.map(([k,n])=>`<div class="gate"><div class="gate-i">${wGates[k]?'✅':'⏳'}</div><div class="gate-nfo"><div class="gate-n">${n}</div></div><div class="gate-st ${wGates[k]?'pass':'pending'}">${wGates[k]?'PASS':'PENDING'}</div></div>`).join('')}</div></div>`}
+function rCmt(){if(!wCommits.length)return'';return`<div class="cd"><div class="cd-h"><div class="cd-t">📜 Version History</div><span class="mono">${wCommits.length} COMMITS</span></div><div class="cd-b">${wCommits.slice().reverse().map(c=>`<div class="cmt"><span class="c-h">${c.h}</span><span class="c-m">${c.m}</span><span class="c-t">${c.t}</span></div>`).join('')}</div></div>`}
+function rComplete(){return`<div class="comp"><div class="comp-i">🎉</div><div class="comp-t">Song Released!</div><div class="comp-s">"${wd.title}" by ${wd.artist} — Full lifecycle complete</div><div class="dna-tags" style="justify-content:center;margin-bottom:20px"><div class="dna"><span class="k">ID</span><span class="v">${wd.id}</span></div><div class="dna"><span class="k">BPM</span><span class="v">${wd.bpm}</span></div><div class="dna"><span class="k">KEY</span><span class="v">${wd.key}</span></div><div class="dna"><span class="k">COMMITS</span><span class="v">${wCommits.length}</span></div></div>${rCmt()}<button class="btn btn-p btn-lg" onclick="A.resetWF()" style="margin-top:16px">↺ Start New Song</button></div>`}
+
+// ─── WORKFLOW ACTIONS ───
+function wfRef(inp){if(inp.files.length){const el=document.getElementById('refDrop');el.classList.add('ok');el.innerHTML=`<div class="df">✅ ${inp.files[0].name}</div>`;toast('Reference attached','ok')}}
+function wfSubmitLyrics(){const t=document.getElementById('wTitle')?.value.trim(),a=document.getElementById('wArtist')?.value.trim(),g=document.getElementById('wGenre')?.value,m=document.getElementById('wMood')?.value,l=document.getElementById('wLyrics')?.value.trim();if(!t){toast('Title required','err');return}if(!a){toast('Artist required','err');return}if(!l){toast('Lyrics required — gate: lyrics_present','err');return}wd={...wd,title:t,artist:a,genre:g,mood:m,lyrics:l,id:gid()};wCommits.push({h:hsh(),m:`Lyrics: "${t}"`,t:ts()});toast('Lyrics saved','ok');wfNext()}
+function wfRunAI(){const bar=document.getElementById('aiBar');if(bar)bar.style.width='100%';const ico=document.getElementById('aiIco'),tt=document.getElementById('aiTt'),sb=document.getElementById('aiSb');if(tt)tt.textContent='Generating...';if(sb)sb.textContent='Calling Suno API stub...';let i=0;const em=['🎵','🎶','🎸','🎹','🎷','🤖','✨'];const iv=setInterval(()=>{if(ico)ico.textContent=em[i%em.length];i++},250);setTimeout(()=>{clearInterval(iv);const bpms=[78,88,92,98,105,112,120,128,135];const keys=['C Maj','D Maj','Eb Min','F Min','F# Min','G Maj','A Min','Bb Min'];wd.bpm=bpms[Math.floor(Math.random()*bpms.length)];wd.key=keys[Math.floor(Math.random()*keys.length)];wd.energy=Math.floor(Math.random()*7)+3;wd.density=Math.floor(Math.random()*5)+3;wAi=true;wCommits.push({h:hsh(),m:'AI Demo generated',t:ts()});wCommits.push({h:hsh(),m:`Sonic DNA: BPM=${wd.bpm} KEY=${wd.key}`,t:ts()});toast('AI Demo generated','ok');rWF()},2200)}
+function wfRegister(){wCommits.push({h:hsh(),m:`Song Object ${wd.id} → REGISTERED`,t:ts()});const arts=['🌙','🎷','💃','✨','🌃','❤️','🌆','🍂','🎵','💎'];const bgs=['linear-gradient(135deg,#1a1040,#2d1b69)','linear-gradient(135deg,#1a3040,#0d4a4a)','linear-gradient(135deg,#3a1040,#691b4a)','linear-gradient(135deg,#102040,#1b3069)','linear-gradient(135deg,#302010,#4a3520)'];songs.push({id:wd.id,title:wd.title,artist:wd.artist,status:ST.REGISTERED,genre:wd.genre,bpm:wd.bpm,key:wd.key,mood:wd.mood,energy:wd.energy,art:arts[Math.floor(Math.random()*arts.length)],bg:bgs[Math.floor(Math.random()*bgs.length)],density:wd.density,gates:bGates(ST.REGISTERED),qc:null,split:{label:40,composer:25,artist:20,producer:15,signed:false},commits:[...wCommits]});log.unshift({t:ts(),m:`${wd.id} "${wd.title}" registered`,y:'success'});toast(`"${wd.title}" registered`,'ok');document.getElementById('nbSongs').textContent=songs.length;wfNext()}
+function wfSimUp(g,msg){if(wGates[g])return;wGates[g]=true;wCommits.push({h:hsh(),m:msg,t:ts()});toast('Uploaded','ok');rWF()}
+function wfSimGate(g,msg){wGates[g]=true;wCommits.push({h:hsh(),m:msg,t:ts()});toast('Gate passed','ok');rWF()}
+function wfCommit(){const m=document.getElementById('arrMsg')?.value.trim();if(!m){toast('Commit message required','err');return}wGates.ver=true;wCommits.push({h:hsh(),m:m,t:ts()});toast('Version committed','ok');rWF()}
+function wfAdv(n){wCommits.push({h:hsh(),m:`Status → ${WF_STEPS[n].l}`,t:ts()});toast(`Advanced to ${WF_STEPS[n+1]?.l||'next'}`,'ok');const s=songs.find(x=>x.id===wd.id);if(s&&WF_STEPS[n].status){s.status=WF_STEPS[n].status;s.gates=bGates(WF_STEPS[n].status);s.commits=[...wCommits]}wfNext()}
+function wfMusUp(){const f=document.getElementById('musF').value,n=document.getElementById('musN')?.value.trim()||`Track ${wMusFiles.length+1}`,ok=f==='wav48';wMusFiles.push({n,f:{wav48:'WAV 48kHz',wav44:'WAV 44.1kHz',mp3:'MP3 320k'}[f],ok});if(ok){wCommits.push({h:hsh(),m:`Track "${n}" accepted`,t:ts()});toast(`"${n}" accepted`,'ok')}else toast(`"${n}" REJECTED — must be WAV 48kHz`,'err');rWF()}
+function wfArtOS(){wArtOS=true;wGates.fmt=true;wCommits.push({h:hsh(),m:'Nova Artist OS — vocal check passed',t:ts()});toast('Vocal quality: PASS','ok');rWF()}
+function wfMaster(){if(wQC)return;wQC={ok:false,checks:[{n:'True Peak',v:'-1.2dBTP',s:'≤-1.0',pct:88,p:1},{n:'LUFS',v:'-14.1',s:'-14±1',pct:92,p:1},{n:'Sample Rate',v:'48kHz',s:'48kHz',pct:100,p:1},{n:'Tail Silence',v:'0.2s',s:'≥0.5s',pct:40,p:0},{n:'Phase',v:'Clean',s:'OK',pct:95,p:1}]};wGates.splitOk=true;wCommits.push({h:hsh(),m:'Master uploaded — QC triggered',t:ts()});toast('QC: Tail silence FAILED','warn');rWF()}
+function wfReQC(){wQC.checks[3]={n:'Tail Silence',v:'0.6s',s:'≥0.5s',pct:85,p:1};wQC.ok=true;wCommits.push({h:hsh(),m:'Master re-uploaded — QC all pass',t:ts()});toast('QC ALL PASS','ok');rWF()}
+function wfCQC(t){wGates[t==='emo'?'cEmo':'cQual']=!wGates[t==='emo'?'cEmo':'cQual'];if(wGates.cEmo&&wGates.cQual)wCommits.push({h:hsh(),m:'Creative QC approved',t:ts()});rWF()}
+function wfSign(w){wSigs[w]=1;wCommits.push({h:hsh(),m:`Split sheet signed: ${w}`,t:ts()});toast(`${w} signed`,'ok');rWF()}
+function wfChain(){wGates.chain=true;wCommits.push({h:hsh(),m:'Chain of title verified',t:ts()});toast('Chain verified','ok');rWF()}
+function wfRelease(){wCommits.push({h:hsh(),m:`🚀 RELEASED — "${wd.title}"`,t:ts()});const s=songs.find(x=>x.id===wd.id);if(s){s.status=ST.RELEASED;s.gates=bGates(ST.RELEASED);s.split.signed=true;s.commits=[...wCommits]}log.unshift({t:ts(),m:`${wd.id} "${wd.title}" RELEASED`,y:'success'});toast(`🎉 "${wd.title}" RELEASED!`,'ok');ws=9;rWF();rDash()}
+
+// ═══ SCHEMA ═══
+function rSchema(){document.getElementById('schemaC').innerHTML=[
+  ['🗄️ SongObject','PRIMARY','var(--cyan)',`CREATE TABLE song_object (\n  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  song_id       VARCHAR(20) UNIQUE NOT NULL,\n  title         VARCHAR(255) NOT NULL,\n  artist        VARCHAR(255) NOT NULL,\n  genre         VARCHAR(100),\n  status        song_status NOT NULL DEFAULT 'DRAFT',\n  lyrics        TEXT,\n  sonic_dna     JSONB,\n  gates         JSONB,\n  qc_report     JSONB,\n  ai_prompt_log JSONB,\n  created_by    UUID REFERENCES users(id),\n  created_at    TIMESTAMPTZ DEFAULT NOW(),\n  updated_at    TIMESTAMPTZ DEFAULT NOW()\n);\n\nCREATE TYPE song_status AS ENUM (\n  'DRAFT','REGISTERED','ARRANGED','RECORDED',\n  'MIXED','MASTERED','RELEASED','REJECTED'\n);`],
+  ['👤 Users & Roles','RBAC','var(--purple)',`CREATE TYPE user_role AS ENUM (\n  'HEAD_PRODUCER','LYRICIST','ARRANGER','MUSICIAN',\n  'RECORDING_ENGINEER','MIX_ENGINEER',\n  'MASTER_ENGINEER','ADMIN_LEGAL','AI_SANDBOX'\n);\n\nCREATE TABLE users (\n  id UUID PRIMARY KEY, name VARCHAR(255),\n  email VARCHAR(255) UNIQUE, role user_role,\n  team VARCHAR(1), active BOOLEAN DEFAULT TRUE\n);`],
+  ['📜 Song Commits','GIT-STYLE','var(--green)',`CREATE TABLE song_commits (\n  id UUID PRIMARY KEY, song_id VARCHAR(20),\n  commit_hash VARCHAR(7), message TEXT,\n  author_id UUID, file_url VARCHAR(500),\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);`],
+  ['⚖️ Split Sheet','RIGHTS','var(--orange)',`CREATE TABLE split_sheet (\n  id UUID PRIMARY KEY, song_id VARCHAR(20),\n  stakeholder_name VARCHAR(255),\n  stakeholder_role VARCHAR(50),\n  percentage DECIMAL(5,2),\n  signed BOOLEAN DEFAULT FALSE,\n  signature_hash VARCHAR(64),\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);`],
+  ['🔄 State Transitions','AUDIT','var(--pink)',`CREATE TABLE state_transitions (\n  id UUID PRIMARY KEY, song_id VARCHAR(20),\n  from_status song_status, to_status song_status,\n  triggered_by UUID, role_at_time user_role,\n  gates_snapshot JSONB,\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);`],
+].map(([t,tag,c,sql])=>`<div class="cd" style="margin-bottom:12px"><div class="cd-h"><div class="cd-t">${t}</div><span class="mono">${tag}</span></div><div class="cd-b"><pre style="font-family:'Space Mono',monospace;font-size:10px;line-height:1.6;color:${c};white-space:pre-wrap">${sql}</pre></div></div>`).join('')}
+
+// ═══ API ═══
+function rAPI(){const eps=[{m:'POST',p:'/api/songs',d:'Create Song Object',r:'HEAD_PRODUCER, LYRICIST',g:'lyrics_present'},{m:'POST',p:'/api/songs/:id/ai-demo',d:'Generate AI Demo',r:'LYRICIST, AI_SANDBOX',g:null},{m:'POST',p:'/api/songs/:id/register',d:'DRAFT → REGISTERED',r:'HEAD_PRODUCER, LYRICIST',g:'lyrics, ai_demo, sonic_dna'},{m:'POST',p:'/api/songs/:id/arrange',d:'REGISTERED → ARRANGED',r:'ARRANGER, HEAD_PRODUCER',g:'arrangement, version_committed'},{m:'POST',p:'/api/songs/:id/upload-tracks',d:'Upload musician tracks (auto-gate)',r:'MUSICIAN',g:'WAV 48kHz format check'},{m:'POST',p:'/api/songs/:id/record',d:'ARRANGED → RECORDED',r:'RECORDING_ENGINEER',g:'vocals, file_format'},{m:'POST',p:'/api/songs/:id/mix',d:'RECORDED → MIXED',r:'MIX_ENGINEER',g:'stems, mix_uploaded'},{m:'POST',p:'/api/songs/:id/master',d:'MIXED → MASTERED',r:'MASTER_ENGINEER',g:'LUFS, True Peak, Creative QC'},{m:'POST',p:'/api/songs/:id/release',d:'MASTERED → RELEASED',r:'ADMIN_LEGAL',g:'split_sheet, signatures, chain_of_title'},{m:'GET',p:'/api/songs/:id',d:'Get full Song Object',r:'ALL (RBAC filtered)',g:null},{m:'POST',p:'/api/songs/:id/sign',d:'Digitally sign split sheet',r:'ALL (own stake)',g:null}];
+document.getElementById('apiC').innerHTML=eps.map(e=>`<div class="cd" style="margin-bottom:8px"><div class="cd-b" style="padding:12px 16px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;font-family:'Space Mono',monospace;background:${e.m==='POST'?'rgba(104,211,145,.1)':'rgba(99,179,237,.1)'};color:${e.m==='POST'?'var(--green)':'var(--blue)'}">${e.m}</span><code style="font-family:'Space Mono',monospace;font-size:11px">${e.p}</code></div><div style="font-size:12px;color:var(--t2);margin-bottom:4px">${e.d}</div><div style="font-size:10px"><span style="color:var(--t3)">Roles:</span> <span style="color:var(--purple)">${e.r}</span>${e.g?` · <span style="color:var(--t3)">Gates:</span> <span style="color:var(--orange)">${e.g}</span>`:''}</div></div></div>`).join('')}
+
+// ═══ RBAC ═══
+function rRBAC(){const acts=['create','view_all','advance_any','advance_draft','advance_arrangement','advance_recording','advance_mix','advance_master','advance_release','approve_creative','approve_technical','manage_rights','upload_tracks','generate_demo','ai_sandbox'];const rks=Object.keys(RN);
+document.getElementById('rbacC').innerHTML=`<div class="cd" style="overflow-x:auto"><table class="stbl"><thead><tr><th style="min-width:140px">Permission</th>${rks.map(r=>`<th style="min-width:70px;text-align:center;font-size:8px">${RN[r].split(' ')[0]}</th>`).join('')}</tr></thead><tbody>${acts.map(a=>`<tr><td style="font-size:11px">${a.replace(/_/g,' ')}</td>${rks.map(r=>`<td style="text-align:center">${RBAC[r]?.[a]?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--t4)">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+
+// ═══ INIT ═══
+seed();rDash();document.getElementById('nbSongs').textContent=songs.length;
+
+return{nav,setRole,filterSongs,songModal,closeModal,toggleGate,advance,resetWF,wfGo,wfNext,wfRef,wfSubmitLyrics,wfRunAI,wfRegister,wfSimUp,wfSimGate,wfCommit,wfAdv,wfMusUp,wfArtOS,wfMaster,wfReQC,wfCQC,wfSign,wfChain,wfRelease}
+})();
+</script>
+</body>
+</html>
