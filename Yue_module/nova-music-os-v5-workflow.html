@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova Music OS – Industrial-Grade Music Production System</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #07080D;
+  --bg-surface: #0E1018;
+  --bg-card: #141620;
+  --bg-elevated: #1A1D2B;
+  --border: rgba(255,255,255,0.06);
+  --border-active: rgba(99,179,237,0.3);
+  --text-primary: #E8ECF4;
+  --text-secondary: #8B92A8;
+  --text-muted: #555B70;
+  --accent-blue: #63B3ED;
+  --accent-cyan: #4FD1C5;
+  --accent-purple: #A78BFA;
+  --accent-orange: #F6AD55;
+  --accent-pink: #F687B3;
+  --accent-green: #68D391;
+  --accent-red: #FC8181;
+  --accent-yellow: #FAF089;
+  --glow-blue: rgba(99,179,237,0.15);
+  --glow-cyan: rgba(79,209,197,0.15);
+  --glow-purple: rgba(167,139,250,0.15);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+
+/* ========== AMBIENT BACKGROUND ========== */
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ambient-bg .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.12;
+  animation: orbFloat 20s ease-in-out infinite;
+}
+.ambient-bg .orb:nth-child(1) { width:600px; height:600px; background:var(--accent-blue); top:-10%; left:-5%; animation-delay:0s; }
+.ambient-bg .orb:nth-child(2) { width:500px; height:500px; background:var(--accent-purple); top:30%; right:-10%; animation-delay:-7s; }
+.ambient-bg .orb:nth-child(3) { width:400px; height:400px; background:var(--accent-cyan); bottom:-5%; left:30%; animation-delay:-14s; }
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* ========== GRID PATTERN ========== */
+.grid-pattern {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* ========== LAYOUT ========== */
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ========== HEADER ========== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(7,8,13,0.85);
+  backdrop-filter: blur(20px);
+  margin: 0 -40px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: white;
+  letter-spacing: -1px;
+  box-shadow: 0 0 30px var(--glow-blue);
+}
+.logo-text {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.5px;
+}
+.logo-text span { color: var(--text-muted); font-weight: 400; margin-left: 6px; font-size: 14px; }
+
+.header-nav {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-surface);
+  border-radius: 10px;
+  padding: 4px;
+  border: 1px solid var(--border);
+}
+.nav-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.nav-btn:hover { color: var(--text-primary); background: var(--bg-card); }
+.nav-btn.active { color: var(--text-primary); background: var(--bg-elevated); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.status-dot { width:8px; height:8px; border-radius:50%; background:var(--accent-green); box-shadow: 0 0 12px var(--accent-green); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%, 100% { opacity:1; } 50% { opacity:0.5; } }
+.status-text { font-size:12px; color:var(--text-secondary); font-family:'Space Mono', monospace; }
+
+/* ========== VIEWS ========== */
+.view { display: none; padding: 40px 0 80px; animation: fadeIn 0.4s ease; }
+.view.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* ========== OVERVIEW VIEW ========== */
+.hero-section {
+  text-align: center;
+  padding: 80px 0 60px;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--accent-cyan);
+  font-family: 'Space Mono', monospace;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.hero-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent-cyan); }
+.hero-title {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-blue) 50%, var(--accent-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+/* Stats Row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 60px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  text-align: center;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+  opacity: 0;
+  transition: var(--transition);
+}
+.stat-card:hover { border-color: var(--border-active); transform: translateY(-2px); }
+.stat-card:hover::before { opacity: 1; }
+.stat-number {
+  font-family: 'Sora', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.stat-number.blue { color: var(--accent-blue); }
+.stat-number.cyan { color: var(--accent-cyan); }
+.stat-number.purple { color: var(--accent-purple); }
+.stat-number.orange { color: var(--accent-orange); }
+.stat-label { font-size: 13px; color: var(--text-secondary); }
+
+/* Module Cards */
+.section-header {
+  margin-bottom: 32px;
+}
+.section-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 60px;
+}
+.module-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.module-card:hover {
+  border-color: var(--border-active);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.module-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+.module-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+.module-card:nth-child(1) .module-icon { background: rgba(99,179,237,0.12); }
+.module-card:nth-child(2) .module-icon { background: rgba(167,139,250,0.12); }
+.module-card:nth-child(3) .module-icon { background: rgba(79,209,197,0.12); }
+.module-card:nth-child(4) .module-icon { background: rgba(246,173,85,0.12); }
+.module-card:nth-child(5) .module-icon { background: rgba(246,135,179,0.12); }
+.module-card:nth-child(6) .module-icon { background: rgba(104,211,145,0.12); }
+.module-name {
+  font-family: 'Sora', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+.module-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ========== PIPELINE VIEW ========== */
+.pipeline-wrapper { padding-top: 20px; }
+
+.pipeline-visual {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-bottom: 48px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+.pipeline-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 150px;
+  flex: 1;
+  cursor: pointer;
+  position: relative;
+}
+.pipeline-stage:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: calc(50% + 30px);
+  width: calc(100% - 60px);
+  height: 2px;
+  background: var(--border);
+}
+.pipeline-stage.completed:not(:last-child)::after {
+  background: linear-gradient(90deg, var(--accent-green), var(--accent-green));
+}
+.pipeline-stage.active:not(:last-child)::after {
+  background: linear-gradient(90deg, var(--accent-blue), var(--border));
+}
+.stage-dot {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 14px;
+  z-index: 2;
+  transition: var(--transition);
+}
+.pipeline-stage.completed .stage-dot {
+  background: rgba(104,211,145,0.12);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 20px rgba(104,211,145,0.2);
+}
+.pipeline-stage.active .stage-dot {
+  background: rgba(99,179,237,0.12);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 20px rgba(99,179,237,0.25);
+  animation: pulseRing 2s ease infinite;
+}
+@keyframes pulseRing {
+  0%, 100% { box-shadow: 0 0 20px rgba(99,179,237,0.25); }
+  50% { box-shadow: 0 0 30px rgba(99,179,237,0.4); }
+}
+.pipeline-stage:hover .stage-dot { transform: scale(1.08); }
+.stage-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+.pipeline-stage.active .stage-label { color: var(--accent-blue); }
+.pipeline-stage.completed .stage-label { color: var(--accent-green); }
+.stage-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: 'Space Mono', monospace;
+  margin-top: 4px;
+}
+
+/* Song Table */
+.song-table-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.table-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+.table-actions { display: flex; gap: 8px; }
+.table-action-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'DM Sans', sans-serif;
+}
+.table-action-btn:hover { border-color: var(--border-active); color: var(--text-primary); }
+.table-action-btn.primary {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  border: none;
+  color: white;
+  font-weight: 600;
+}
+.table-action-btn.primary:hover { opacity: 0.9; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+thead th {
+  padding: 12px 24px;
+  text-align: left;
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 400;
+}
+tbody tr {
+  transition: var(--transition);
+  cursor: pointer;
+}
+tbody tr:hover { background: var(--bg-elevated); }
+tbody td {
+  padding: 14px 24px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.song-id {
+  font-family: 'Space Mono', monospace;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.song-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.song-art {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.song-name { font-weight: 600; font-size: 14px; }
+.song-artist { font-size: 11px; color: var(--text-secondary); }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.status-badge.draft { background: rgba(139,146,168,0.12); color: var(--text-secondary); }
+.status-badge.approved { background: rgba(99,179,237,0.12); color: var(--accent-blue); }
+.status-badge.production { background: rgba(167,139,250,0.12); color: var(--accent-purple); }
+.status-badge.mixed { background: rgba(246,173,85,0.12); color: var(--accent-orange); }
+.status-badge.mastered { background: rgba(79,209,197,0.12); color: var(--accent-cyan); }
+.status-badge.released { background: rgba(104,211,145,0.12); color: var(--accent-green); }
+.status-badge::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+.progress-bar-cell {
+  width: 100px;
+}
+.mini-progress {
+  height: 4px;
+  background: var(--bg-deep);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.mini-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+/* ========== SONG DETAIL MODAL ========== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.modal-overlay.active { display: flex; }
+.modal-content {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 680px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: modalSlide 0.3s ease;
+}
+@keyframes modalSlide { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: var(--transition);
+}
+.modal-close:hover { background: var(--bg-elevated); color: var(--text-primary); }
+.modal-body { padding: 28px; }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+.detail-item {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+.detail-label {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.detail-value {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sonic-dna {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 28px;
+}
+.sonic-dna h4 {
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: var(--accent-cyan);
+}
+.dna-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dna-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+}
+.dna-tag-label { color: var(--text-muted); }
+.dna-tag-value { color: var(--text-primary); font-weight: 700; }
+
+.version-history {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.version-history h4 {
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: var(--accent-purple);
+}
+.commit-list { display: flex; flex-direction: column; gap: 10px; }
+.commit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-elevated);
+}
+.commit-hash {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--accent-blue);
+  background: rgba(99,179,237,0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.commit-msg { font-size: 12px; color: var(--text-secondary); flex: 1; }
+.commit-time { font-size: 10px; color: var(--text-muted); font-family: 'Space Mono', monospace; }
+
+/* ========== ROLES VIEW ========== */
+.roles-container {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  margin-top: 20px;
+}
+.roles-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.role-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+}
+.role-tab:hover { background: var(--bg-card); color: var(--text-primary); }
+.role-tab.active {
+  background: var(--bg-card);
+  border-color: var(--border-active);
+  color: var(--text-primary);
+}
+.role-tab-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.role-tab-name { font-weight: 600; }
+.role-tab-desc { font-size: 11px; color: var(--text-muted); }
+
+.role-detail-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.role-detail-panel.active { display: block; }
+.role-detail-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.role-detail-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+.permissions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.permission-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  font-size: 13px;
+}
+.perm-icon { font-size: 16px; }
+.perm-granted { color: var(--accent-green); }
+.perm-denied { color: var(--accent-red); opacity: 0.5; }
+
+/* ========== ANALYTICS VIEW ========== */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+  margin-top: 20px;
+}
+.analytics-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+.analytics-card.wide { grid-column: span 2; }
+.analytics-card.full { grid-column: span 3; }
+.analytics-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.analytics-card-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+.analytics-card-tag {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.chart-bar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chart-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.chart-bar-label {
+  width: 80px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+  flex-shrink: 0;
+}
+.chart-bar-track {
+  flex: 1;
+  height: 24px;
+  background: var(--bg-deep);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.chart-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.chart-bar-value {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  color: white;
+}
+
+/* Donut Chart */
+.donut-container {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.donut-svg { width: 140px; height: 140px; }
+.donut-legend { display: flex; flex-direction: column; gap: 10px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.legend-value { font-family: 'Space Mono', monospace; color: var(--text-muted); font-size: 11px; margin-left: auto; padding-left: 12px; }
+
+/* Velocity */
+.velocity-items { display: flex; flex-direction: column; gap: 14px; }
+.velocity-item { display: flex; justify-content: space-between; align-items: center; }
+.velocity-label { font-size: 13px; color: var(--text-secondary); }
+.velocity-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+}
+.velocity-value.fast { color: var(--accent-green); }
+.velocity-value.normal { color: var(--accent-blue); }
+.velocity-value.slow { color: var(--accent-orange); }
+
+/* Prediction Cards */
+.prediction-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.prediction-card {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+}
+.prediction-score {
+  font-family: 'Sora', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.prediction-title { font-size: 12px; color: var(--text-secondary); margin-bottom: 2px; }
+.prediction-trend { font-size: 10px; font-family: 'Space Mono', monospace; }
+.prediction-trend.up { color: var(--accent-green); }
+.prediction-trend.down { color: var(--accent-red); }
+
+/* ========== QC VIEW ========== */
+.qc-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 20px;
+}
+.qc-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+.qc-panel-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.qc-items { display: flex; flex-direction: column; gap: 14px; }
+.qc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.qc-item:hover { background: rgba(26,29,43,0.8); }
+.qc-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.qc-item-name { font-size: 13px; font-weight: 500; }
+.qc-item-spec { font-size: 11px; color: var(--text-muted); font-family: 'Space Mono', monospace; }
+.qc-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.qc-badge.pass { background: rgba(104,211,145,0.12); color: var(--accent-green); }
+.qc-badge.fail { background: rgba(252,129,129,0.12); color: var(--accent-red); }
+.qc-badge.pending { background: rgba(246,173,85,0.12); color: var(--accent-orange); }
+
+/* Rights Split */
+.split-visual {
+  margin-top: 16px;
+}
+.split-bar {
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.split-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  transition: var(--transition);
+}
+.split-segment:hover { opacity: 0.8; }
+.split-legend { display: flex; flex-wrap: wrap; gap: 12px; }
+.split-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+.split-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+/* ========== WORKFLOW ========== */
+.wf-rail{display:flex;align-items:center;padding:20px 0 8px;overflow-x:auto;gap:0;margin-bottom:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:85px;flex:1;position:relative;cursor:pointer;opacity:.35;transition:var(--transition)}.wf-step.done,.wf-step.active{opacity:1}
+.wf-step:not(:last-child)::after{content:'';position:absolute;top:16px;left:calc(50% + 18px);width:calc(100% - 36px);height:2px;background:var(--border);transition:background .4s ease}
+.wf-step.done:not(:last-child)::after{background:var(--accent-green)}.wf-step.active:not(:last-child)::after{background:linear-gradient(90deg,var(--accent-blue),var(--border))}
+.wf-dot{width:32px;height:32px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;z-index:2;transition:var(--transition)}
+.wf-step.done .wf-dot{background:rgba(104,211,145,.1);border-color:var(--accent-green);color:var(--accent-green);font-weight:700}
+.wf-step.active .wf-dot{background:rgba(99,179,237,.1);border-color:var(--accent-blue);box-shadow:0 0 16px rgba(99,179,237,.2)}
+.wf-lbl{margin-top:5px;font-size:9px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;text-align:center;max-width:80px;line-height:1.2}
+.wf-step.done .wf-lbl{color:var(--accent-green)}.wf-step.active .wf-lbl{color:var(--accent-blue)}
+.wf-phases{display:flex;gap:5px;margin-bottom:20px;flex-wrap:wrap}
+.wf-phase{padding:3px 10px;border-radius:14px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.wf-phase.pre{background:rgba(99,179,237,.08);color:var(--accent-blue)}.wf-phase.prod{background:rgba(167,139,250,.08);color:var(--accent-purple)}
+.wf-phase.post{background:rgba(79,209,197,.08);color:var(--accent-cyan)}.wf-phase.rel{background:rgba(104,211,145,.08);color:var(--accent-green)}
+.wf-phase.current{box-shadow:inset 0 0 0 1px currentColor}
+.wf-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+.wf-card-h{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.03)}
+.wf-card-t{font-family:'Sora';font-size:14px;font-weight:600}.wf-card-b{padding:22px}.wf-card-f{padding:14px 22px;border-top:1px solid rgba(255,255,255,.03);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.wf-fg{margin-bottom:14px}.wf-fl{display:block;font-size:10px;font-family:'Space Mono',monospace;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.wf-fi,.wf-ta,.wf-sl{width:100%;padding:10px 14px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:13px;transition:border-color .2s ease}
+.wf-fi:focus,.wf-ta:focus,.wf-sl:focus{outline:none;border-color:var(--border-active)}.wf-ta{resize:vertical;min-height:90px;line-height:1.6}
+.wf-sl{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%238B92A8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.wf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.wf-hint{font-size:10px;color:var(--text-muted)}
+.wf-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;border:none;transition:var(--transition);white-space:nowrap;cursor:pointer}
+.wf-btn-p{background:linear-gradient(135deg,var(--accent-blue),var(--accent-purple));color:#fff}.wf-btn-p:hover{opacity:.88;transform:translateY(-1px)}.wf-btn-p:disabled{opacity:.25;cursor:not-allowed;transform:none}
+.wf-btn-s{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary)}.wf-btn-s:hover{border-color:var(--border-active);color:var(--text-primary)}
+.wf-btn-g{background:linear-gradient(135deg,var(--accent-green),#34D399);color:#fff}.wf-btn-g:hover{opacity:.88}.wf-btn-g:disabled{opacity:.25;cursor:not-allowed}
+.wf-btn-d{background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.15);color:var(--accent-red)}.wf-btn-lg{padding:12px 26px;font-size:14px;border-radius:var(--radius)}
+.wf-gate{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-elevated);border-radius:var(--radius-sm);margin-bottom:6px;transition:var(--transition)}.wf-gate:last-child{margin-bottom:0}
+.wf-gate.click{cursor:pointer}.wf-gate.click:hover{background:rgba(26,29,43,.9)}
+.wf-gate-i{font-size:15px;width:20px;text-align:center;flex-shrink:0}.wf-gate-nfo{flex:1}.wf-gate-n{font-size:12px;font-weight:600}.wf-gate-sp{font-size:9px;color:var(--text-muted);font-family:'Space Mono',monospace}
+.wf-gate-st{padding:2px 7px;border-radius:3px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.wf-gate-st.pass{background:rgba(104,211,145,.1);color:var(--accent-green)}.wf-gate-st.fail{background:rgba(252,129,129,.1);color:var(--accent-red)}
+.wf-gate-st.pending{background:rgba(246,173,85,.1);color:var(--accent-orange)}.wf-gate-st.locked{background:rgba(78,84,104,.15);color:var(--text-muted)}
+.wf-drop{border:2px dashed var(--border);border-radius:var(--radius);padding:28px;text-align:center;transition:var(--transition);cursor:pointer}
+.wf-drop:hover{border-color:var(--border-active);background:rgba(99,179,237,.02)}.wf-drop.ok{border-color:var(--accent-green);border-style:solid;background:rgba(104,211,145,.03)}
+.wf-drop-i{font-size:30px;margin-bottom:6px}.wf-drop-t{font-size:13px;color:var(--text-secondary)}.wf-drop-h{font-size:10px;color:var(--text-muted);margin-top:3px}.wf-drop-f{font-size:12px;color:var(--accent-green);font-weight:600;margin-top:6px}
+.wf-ai{background:var(--bg-elevated);border-radius:var(--radius);padding:28px;text-align:center;margin-bottom:16px}
+.wf-ai-big{font-size:44px;margin-bottom:12px}.wf-ai-tt{font-family:'Sora';font-size:16px;font-weight:700;margin-bottom:4px}.wf-ai-sub{font-size:12px;color:var(--text-secondary)}
+.wf-ai-bar{height:6px;background:var(--bg-card);border-radius:3px;margin-top:16px;overflow:hidden}.wf-ai-bar-f{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent-blue),var(--accent-cyan));width:0%;transition:width 2.2s ease}
+.wf-wave{height:44px;background:var(--bg-elevated);border-radius:6px;overflow:hidden;display:flex;align-items:center;gap:1px;padding:0 8px}.wf-wave-b{flex:1;border-radius:1px;opacity:.6}
+.wf-qm{display:flex;align-items:center;gap:10px;margin-bottom:10px}.wf-qm-l{width:90px;font-size:11px;color:var(--text-secondary);text-align:right;flex-shrink:0}
+.wf-qm-t{flex:1;height:20px;background:var(--bg-card);border-radius:4px;overflow:hidden;position:relative}.wf-qm-f{height:100%;border-radius:4px;transition:width 1s ease}
+.wf-qm-v{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:9px;font-family:'Space Mono',monospace;font-weight:700;color:#fff}.wf-qm-s{width:55px;font-size:9px;font-family:'Space Mono',monospace;color:var(--text-muted);text-align:right;flex-shrink:0}
+.wf-sig{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg-elevated);border-radius:var(--radius-sm);margin-bottom:4px;cursor:pointer;transition:var(--transition)}.wf-sig:hover{background:rgba(26,29,43,.9)}
+.wf-sig-n{font-size:12px}.wf-sig-s{font-size:10px;font-weight:700}.wf-sig-s.y{color:var(--accent-green)}.wf-sig-s.n{color:var(--accent-orange)}
+.wf-comp{text-align:center;padding:60px 0}.wf-comp-i{font-size:72px;margin-bottom:20px;animation:wfBounce .8s cubic-bezier(.34,1.56,.64,1)}
+@keyframes wfBounce{0%{transform:scale(0)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+.wf-comp-t{font-family:'Sora';font-size:30px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,var(--accent-green),var(--accent-cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.wf-comp-s{font-size:15px;color:var(--text-secondary);margin-bottom:28px}
+.wf-toasts{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:6px}
+.wf-toast{padding:10px 18px;border-radius:var(--radius);font-size:12px;font-weight:600;animation:toastIn .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 28px rgba(0,0,0,.4);max-width:340px}
+@keyframes toastIn{from{transform:translateX(30px);opacity:0}to{transform:translateX(0);opacity:1}}
+.wf-toast.ok{background:var(--accent-green);color:#0a2015}.wf-toast.err{background:var(--accent-red);color:#fff}.wf-toast.warn{background:#FBBF24;color:#1a1500}.wf-toast.info{background:var(--accent-blue);color:#051525}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .modules-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .analytics-grid { grid-template-columns: 1fr; }
+  .analytics-card.wide, .analytics-card.full { grid-column: span 1; }
+  .roles-container { grid-template-columns: 1fr; }
+  .qc-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .app-container { padding: 0 16px; }
+  .app-header { padding-left: 16px; padding-right: 16px; margin: 0 -16px; flex-wrap: wrap; gap: 12px; }
+  .modules-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .permissions-grid { grid-template-columns: 1fr; }
+  .prediction-row { grid-template-columns: 1fr; }
+  .header-nav { overflow-x: auto; }
+  .modal-content { width: 95%; margin: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="ambient-bg">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
+<div class="grid-pattern"></div>
+
+<div class="app-container">
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="logo-group">
+      <div class="logo-icon">N</div>
+      <div class="logo-text">Nova Music OS <span>v3.0</span></div>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-btn active" onclick="switchView('overview')">Overview</button>
+      <button class="nav-btn" onclick="switchView('pipeline')">Pipeline</button>
+      <button class="nav-btn" onclick="switchView('workflow')">⚡ Workflow</button>
+      <button class="nav-btn" onclick="switchView('roles')">Roles & Access</button>
+      <button class="nav-btn" onclick="switchView('analytics')">Analytics</button>
+      <button class="nav-btn" onclick="switchView('qc')">QC & Rights</button>
+    </nav>
+    <div class="header-status">
+      <div class="status-dot"></div>
+      <div class="status-text">SYSTEM ACTIVE</div>
+    </div>
+  </header>
+
+  <!-- ========== OVERVIEW VIEW ========== -->
+  <div class="view active" id="view-overview">
+    <div class="hero-section">
+      <div class="hero-badge">Industrial-Grade Music Production</div>
+      <h1 class="hero-title">Nova Music OS</h1>
+      <p class="hero-sub">The IP Factory platform — producing 300–1,000+ songs per year with AI-assisted workflows, rights governance, and real-time analytics.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-number blue" data-count="847">0</div>
+        <div class="stat-label">Songs Produced (YTD)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number cyan">6</div>
+        <div class="stat-label">Core Modules</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number purple">4</div>
+        <div class="stat-label">Production Teams</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number orange">98.2%</div>
+        <div class="stat-label">QC Pass Rate</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-tag">System Architecture</div>
+      <div class="section-title">6 Core Modules</div>
+    </div>
+    <div class="modules-grid">
+      <div class="module-card" onclick="switchView('pipeline')">
+        <div class="module-num">MODULE 01</div>
+        <div class="module-icon">🏭</div>
+        <div class="module-name">Song Factory Engine</div>
+        <div class="module-desc">Every song is a Song Object with auto-generated IDs, status tracking, and complete lifecycle management from Draft to Archived.</div>
+      </div>
+      <div class="module-card" onclick="switchView('roles')">
+        <div class="module-num">MODULE 02</div>
+        <div class="module-icon">🔐</div>
+        <div class="module-name">Role-Based Workflow</div>
+        <div class="module-desc">Structured permissions for Composer, Artist, Producer, Engineer, Admin, and AI — each seeing only what they need.</div>
+      </div>
+      <div class="module-card" onclick="switchView('workflow')">
+        <div class="module-num">MODULE 03</div>
+        <div class="module-icon">🤖</div>
+        <div class="module-name">AI-Assisted Mass Creation</div>
+        <div class="module-desc">AI as digital workforce: melody drafts, 30–60s demos, song variations, genre/mood categorization — all within a controlled sandbox.</div>
+      </div>
+      <div class="module-card" onclick="switchView('workflow')">
+        <div class="module-num">MODULE 04</div>
+        <div class="module-icon">⚡</div>
+        <div class="module-name">Production Assembly Line</div>
+        <div class="module-desc">Teams A–D handle Arrangement → Vocal → Mixing → Mastering in batch mode (10–20 songs per round), no step-skipping.</div>
+      </div>
+      <div class="module-card" onclick="switchView('qc')">
+        <div class="module-num">MODULE 05</div>
+        <div class="module-icon">⚖️</div>
+        <div class="module-name">Smart Split & Rights Engine</div>
+        <div class="module-desc">Standard split sheets, dynamic revenue sharing, micro-payments, chain of title, and digital signature requirements before release.</div>
+      </div>
+      <div class="module-card" onclick="switchView('analytics')">
+        <div class="module-num">MODULE 06</div>
+        <div class="module-icon">📊</div>
+        <div class="module-name">Release & Analytics Engine</div>
+        <div class="module-desc">Batch releases (weekly/monthly), ROI per genre, production velocity, predictive success modeling, and strategic dashboards.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PIPELINE VIEW ========== -->
+  <div class="view" id="view-pipeline">
+    <div class="section-header">
+      <div class="section-tag">Production Assembly Line</div>
+      <div class="section-title">Song Production Pipeline</div>
+    </div>
+
+    <div class="pipeline-visual">
+      <div class="pipeline-stage completed">
+        <div class="stage-dot">📝</div>
+        <div class="stage-label">Draft</div>
+        <div class="stage-sub">Song Object Created</div>
+      </div>
+      <div class="pipeline-stage completed">
+        <div class="stage-dot">🤖</div>
+        <div class="stage-label">AI Creation</div>
+        <div class="stage-sub">Melody & Demo</div>
+      </div>
+      <div class="pipeline-stage completed">
+        <div class="stage-dot">👤</div>
+        <div class="stage-label">Human Review</div>
+        <div class="stage-sub">Selection & QC</div>
+      </div>
+      <div class="pipeline-stage active">
+        <div class="stage-dot">🎵</div>
+        <div class="stage-label">Arrangement</div>
+        <div class="stage-sub">Team A</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="stage-dot">🎤</div>
+        <div class="stage-label">Vocal</div>
+        <div class="stage-sub">Team B</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="stage-dot">🎛️</div>
+        <div class="stage-label">Mixing</div>
+        <div class="stage-sub">Team C</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="stage-dot">💎</div>
+        <div class="stage-label">Mastering</div>
+        <div class="stage-sub">Team D</div>
+      </div>
+    </div>
+
+    <div class="song-table-container">
+      <div class="table-header">
+        <div class="table-title">Active Song Objects — Batch #27</div>
+        <div class="table-actions">
+          <button class="table-action-btn" onclick="filterSongs('all')">All</button>
+          <button class="table-action-btn" onclick="filterSongs('production')">In Production</button>
+          <button class="table-action-btn primary" onclick="switchView('workflow')">⚡ New Song Workflow</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Song ID</th>
+            <th>Title / Artist</th>
+            <th>Status</th>
+            <th>Genre</th>
+            <th>Progress</th>
+            <th>BPM</th>
+          </tr>
+        </thead>
+        <tbody id="song-table-body">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== WORKFLOW (9-Step Stage-Gate) ========== -->
+  <div class="view" id="view-workflow">
+    <div class="section-header">
+      <div class="section-tag">Stage-Gate Production</div>
+      <div class="section-title">9-Step Song Workflow</div>
+    </div>
+    <div id="wf-rail-c"></div>
+    <div id="wf-phases-c"></div>
+    <div id="wf-body"></div>
+  </div>
+
+  <!-- ========== ROLES VIEW ========== -->
+  <div class="view" id="view-roles">
+    <div class="section-header">
+      <div class="section-tag">Access Control</div>
+      <div class="section-title">Role-Based Workflow Permissions</div>
+    </div>
+
+    <div class="roles-container">
+      <div class="roles-sidebar" id="roles-sidebar">
+      </div>
+      <div id="role-panels">
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ANALYTICS VIEW ========== -->
+  <div class="view" id="view-analytics">
+    <div class="section-header">
+      <div class="section-tag">Strategic Intelligence</div>
+      <div class="section-title">Release & Analytics Dashboard</div>
+    </div>
+
+    <div class="analytics-grid">
+      <!-- ROI by Genre -->
+      <div class="analytics-card wide">
+        <div class="analytics-card-header">
+          <div class="analytics-card-title">ROI per Genre</div>
+          <div class="analytics-card-tag">Revenue vs Cost</div>
+        </div>
+        <div class="chart-bar-group" id="roi-chart">
+        </div>
+      </div>
+
+      <!-- Status Donut -->
+      <div class="analytics-card">
+        <div class="analytics-card-header">
+          <div class="analytics-card-title">Song Status Distribution</div>
+          <div class="analytics-card-tag">Current Batch</div>
+        </div>
+        <div class="donut-container">
+          <svg class="donut-svg" viewBox="0 0 42 42">
+            <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="var(--bg-elevated)" stroke-width="4"/>
+            <circle id="donut-released" cx="21" cy="21" r="15.9" fill="transparent" stroke="var(--accent-green)" stroke-width="4" stroke-dasharray="35 65" stroke-dashoffset="25" stroke-linecap="round"/>
+            <circle id="donut-mastered" cx="21" cy="21" r="15.9" fill="transparent" stroke="var(--accent-cyan)" stroke-width="4" stroke-dasharray="15 85" stroke-dashoffset="-10" stroke-linecap="round"/>
+            <circle id="donut-production" cx="21" cy="21" r="15.9" fill="transparent" stroke="var(--accent-purple)" stroke-width="4" stroke-dasharray="25 75" stroke-dashoffset="-25" stroke-linecap="round"/>
+            <circle id="donut-draft" cx="21" cy="21" r="15.9" fill="transparent" stroke="var(--text-muted)" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="-50" stroke-linecap="round"/>
+          </svg>
+          <div class="donut-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green)"></div>Released <span class="legend-value">35%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--accent-cyan)"></div>Mastered <span class="legend-value">15%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--accent-purple)"></div>In Production <span class="legend-value">25%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--text-muted)"></div>Draft <span class="legend-value">20%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Production Velocity -->
+      <div class="analytics-card">
+        <div class="analytics-card-header">
+          <div class="analytics-card-title">Production Velocity</div>
+          <div class="analytics-card-tag">Avg Time per Stage</div>
+        </div>
+        <div class="velocity-items">
+          <div class="velocity-item"><span class="velocity-label">Draft → Approved</span><span class="velocity-value fast">1.2 days</span></div>
+          <div class="velocity-item"><span class="velocity-label">AI Creation</span><span class="velocity-value fast">0.3 days</span></div>
+          <div class="velocity-item"><span class="velocity-label">Human Review</span><span class="velocity-value normal">2.1 days</span></div>
+          <div class="velocity-item"><span class="velocity-label">Arrangement</span><span class="velocity-value slow">4.8 days</span></div>
+          <div class="velocity-item"><span class="velocity-label">Vocal Recording</span><span class="velocity-value normal">3.2 days</span></div>
+          <div class="velocity-item"><span class="velocity-label">Mix & Master</span><span class="velocity-value fast">2.0 days</span></div>
+        </div>
+      </div>
+
+      <!-- Predictive Success -->
+      <div class="analytics-card wide">
+        <div class="analytics-card-header">
+          <div class="analytics-card-title">Predictive Success Modeling</div>
+          <div class="analytics-card-tag">AI-Powered Forecast</div>
+        </div>
+        <div class="prediction-row">
+          <div class="prediction-card">
+            <div class="prediction-score" style="color:var(--accent-green)">87%</div>
+            <div class="prediction-title">Thai Pop Ballad</div>
+            <div class="prediction-trend up">▲ +12% vs market avg</div>
+          </div>
+          <div class="prediction-card">
+            <div class="prediction-score" style="color:var(--accent-blue)">72%</div>
+            <div class="prediction-title">70's Duet Revival</div>
+            <div class="prediction-trend up">▲ +8% trending up</div>
+          </div>
+          <div class="prediction-card">
+            <div class="prediction-score" style="color:var(--accent-orange)">54%</div>
+            <div class="prediction-title">Electronic Fusion</div>
+            <div class="prediction-trend down">▼ -3% saturated market</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== QC & RIGHTS VIEW ========== -->
+  <div class="view" id="view-qc">
+    <div class="section-header">
+      <div class="section-tag">Quality & Governance</div>
+      <div class="section-title">Quality Control & Rights Management</div>
+    </div>
+
+    <div class="qc-layout">
+      <!-- Technical QC -->
+      <div class="qc-panel">
+        <div class="qc-panel-title">🔬 Automated Technical QC</div>
+        <div class="qc-items" id="qc-tech-items">
+        </div>
+      </div>
+
+      <!-- Creative QC -->
+      <div class="qc-panel">
+        <div class="qc-panel-title">🎨 Creative QC Gate</div>
+        <div class="qc-items">
+          <div class="qc-item">
+            <div class="qc-item-left">
+              <span class="perm-icon">🎭</span>
+              <div><div class="qc-item-name">Emotional Standards</div><div class="qc-item-spec">Mood matches label direction</div></div>
+            </div>
+            <div class="qc-badge pass">Approved</div>
+          </div>
+          <div class="qc-item">
+            <div class="qc-item-left">
+              <span class="perm-icon">⭐</span>
+              <div><div class="qc-item-name">Artistic Quality</div><div class="qc-item-spec">Above minimum threshold</div></div>
+            </div>
+            <div class="qc-badge pass">Approved</div>
+          </div>
+          <div class="qc-item">
+            <div class="qc-item-left">
+              <span class="perm-icon">👑</span>
+              <div><div class="qc-item-name">Head Producer Sign-off</div><div class="qc-item-spec">Final creative authority</div></div>
+            </div>
+            <div class="qc-badge pending">Pending</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Split -->
+      <div class="qc-panel" style="grid-column: span 2;">
+        <div class="qc-panel-title">⚖️ Smart Split & Rights Engine — Sample Song</div>
+        <div class="split-visual">
+          <div class="split-bar">
+            <div class="split-segment" style="width:40%; background:var(--accent-blue);">40%</div>
+            <div class="split-segment" style="width:25%; background:var(--accent-purple);">25%</div>
+            <div class="split-segment" style="width:20%; background:var(--accent-cyan);">20%</div>
+            <div class="split-segment" style="width:15%; background:var(--accent-orange);">15%</div>
+          </div>
+          <div class="split-legend">
+            <div class="split-legend-item"><div class="split-legend-dot" style="background:var(--accent-blue)"></div>Record Label (IP Owner)</div>
+            <div class="split-legend-item"><div class="split-legend-dot" style="background:var(--accent-purple)"></div>Composer</div>
+            <div class="split-legend-item"><div class="split-legend-dot" style="background:var(--accent-cyan)"></div>Artist</div>
+            <div class="split-legend-item"><div class="split-legend-dot" style="background:var(--accent-orange)"></div>Producer</div>
+          </div>
+        </div>
+        <div style="margin-top:24px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+          <div class="qc-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
+            <div class="qc-item-spec">SPLIT SHEET</div>
+            <div class="qc-item-name" style="color:var(--accent-green);">✓ Digitally Signed</div>
+          </div>
+          <div class="qc-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
+            <div class="qc-item-spec">CHAIN OF TITLE</div>
+            <div class="qc-item-name" style="color:var(--accent-green);">✓ Verified</div>
+          </div>
+          <div class="qc-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
+            <div class="qc-item-spec">RELEASE CLEARANCE</div>
+            <div class="qc-item-name" style="color:var(--accent-orange);">⏳ Awaiting QC</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SONG DETAIL MODAL -->
+<div class="modal-overlay" id="song-modal">
+  <div class="modal-content" id="song-modal-content">
+    <div class="modal-header">
+      <div>
+        <div class="song-id" id="modal-song-id"></div>
+        <div class="role-detail-title" id="modal-song-title" style="margin-bottom:0;"></div>
+      </div>
+      <button class="modal-close" onclick="closeSongModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid" id="modal-details"></div>
+      <div class="sonic-dna" id="modal-sonic-dna">
+        <h4>🧬 Sonic DNA Tags</h4>
+        <div class="dna-tags" id="modal-dna-tags"></div>
+      </div>
+      <div class="version-history">
+        <h4>📜 Version Control (Git-style)</h4>
+        <div class="commit-list" id="modal-commits"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wf-toasts" id="wf-toasts"></div>
+
+<script>
+// ========== DATA ==========
+const songs = [
+  { id:'NV-2026-0412', title:'ลมหายใจสุดท้าย', artist:'Kwan Usamanee', status:'released', genre:'Thai Pop Ballad', bpm:78, key:'Eb Minor', mood:'Melancholy', energy:4, progress:100, art:'🌙', artBg:'linear-gradient(135deg,#1a1040,#2d1b69)' },
+  { id:'NV-2026-0413', title:'เมื่อวานที่ผ่านพ้น', artist:'Ton Thanapol', status:'mastered', genre:"70's Duet", bpm:112, key:'G Major', mood:'Nostalgic', energy:6, progress:90, art:'🎷', artBg:'linear-gradient(135deg,#1a3040,#0d4a4a)' },
+  { id:'NV-2026-0414', title:'Dancing in Bangkok', artist:'Mint Naree', status:'production', genre:'Thai Dance Pop', bpm:128, key:'A Minor', mood:'Energetic', energy:9, progress:55, art:'💃', artBg:'linear-gradient(135deg,#3a1040,#691b4a)' },
+  { id:'NV-2026-0415', title:'ฝันถึงเธอ', artist:'Beam Papangkorn', status:'production', genre:'R&B Thai', bpm:92, key:'F# Minor', mood:'Dreamy', energy:5, progress:40, art:'✨', artBg:'linear-gradient(135deg,#102040,#1b3069)' },
+  { id:'NV-2026-0416', title:'คืนนี้ไม่มีดาว', artist:'Faye Fang Kaew', status:'mixed', genre:'Thai Indie', bpm:135, key:'C Minor', mood:'Dark/Brooding', energy:7, progress:75, art:'🌃', artBg:'linear-gradient(135deg,#0a0a20,#1a1a40)' },
+  { id:'NV-2026-0417', title:'เพลงรักจากใจ', artist:'Ploy & Krit', status:'approved', genre:"70's Duet Revival", bpm:98, key:'D Major', mood:'Warm/Romantic', energy:5, progress:20, art:'❤️', artBg:'linear-gradient(135deg,#401020,#691b2b)' },
+  { id:'NV-2026-0418', title:'Neon Skyline', artist:'DJ Siam', status:'draft', genre:'Electronic Fusion', bpm:140, key:'Bb Minor', mood:'Futuristic', energy:10, progress:8, art:'🌆', artBg:'linear-gradient(135deg,#0a2030,#003050)' },
+  { id:'NV-2026-0419', title:'ความทรงจำสีจาง', artist:'Noon Woranuch', status:'production', genre:'Thai Acoustic', bpm:85, key:'E Major', mood:'Bittersweet', energy:3, progress:48, art:'🍂', artBg:'linear-gradient(135deg,#302010,#4a3520)' },
+];
+
+const commits = [
+  { hash:'a3f2c1d', msg:'Initial draft uploaded from Suno AI', time:'2h ago' },
+  { hash:'b7e9a0f', msg:'Melody refinement by Composer', time:'1d ago' },
+  { hash:'c1d4e8b', msg:'Arrangement v2 — added strings', time:'3d ago' },
+  { hash:'e5f6a2c', msg:'Vocal take 3 selected', time:'5d ago' },
+];
+
+const roles = [
+  { name:'Composer', icon:'🎹', bg:'rgba(99,179,237,0.12)', desc:'Songwriting & demo creation', permissions:[
+    {name:'View own song drafts', granted:true}, {name:'Submit demos', granted:true}, {name:'Edit lyrics & melody', granted:true}, {name:'View other composers\' work', granted:false}, {name:'Access production files', granted:false}, {name:'View revenue data', granted:false}, {name:'Approve final mix', granted:false}, {name:'Access AI Sandbox', granted:true}
+  ]},
+  { name:'Artist', icon:'🎤', bg:'rgba(167,139,250,0.12)', desc:'Vocal recording & performance', permissions:[
+    {name:'View assigned vocal sessions', granted:true}, {name:'Review song arrangements', granted:true}, {name:'Upload vocal takes', granted:true}, {name:'View songwriting notes', granted:false}, {name:'Edit arrangement files', granted:false}, {name:'Access mix settings', granted:false}, {name:'View revenue splits', granted:false}, {name:'Request re-recording', granted:true}
+  ]},
+  { name:'Producer', icon:'🎧', bg:'rgba(79,209,197,0.12)', desc:'Creative oversight & direction', permissions:[
+    {name:'View all songs in production', granted:true}, {name:'Approve creative direction', granted:true}, {name:'Assign engineers & teams', granted:true}, {name:'Access AI generation logs', granted:true}, {name:'View Sonic DNA tags', granted:true}, {name:'Edit split sheets', granted:false}, {name:'Release songs', granted:false}, {name:'View analytics dashboard', granted:true}
+  ]},
+  { name:'Engineer', icon:'🔧', bg:'rgba(246,173,85,0.12)', desc:'Technical audio production', permissions:[
+    {name:'Access assigned tech files', granted:true}, {name:'Upload mix/master files', granted:true}, {name:'Run automated QC checks', granted:true}, {name:'View Sonic DNA metadata', granted:true}, {name:'Access other team files', granted:false}, {name:'Approve creative decisions', granted:false}, {name:'View revenue data', granted:false}, {name:'Modify song status', granted:false}
+  ]},
+  { name:'Admin / Legal', icon:'📋', bg:'rgba(246,135,179,0.12)', desc:'Rights, contracts & compliance', permissions:[
+    {name:'View all documents', granted:true}, {name:'Manage split sheets', granted:true}, {name:'Digital signature approval', granted:true}, {name:'View chain of title', granted:true}, {name:'Access revenue data', granted:true}, {name:'Block release (incomplete docs)', granted:true}, {name:'Edit creative files', granted:false}, {name:'Approve artistic direction', granted:false}
+  ]},
+  { name:'AI (Sandbox)', icon:'🤖', bg:'rgba(104,211,145,0.12)', desc:'Digital workforce — no ownership', permissions:[
+    {name:'Generate melody drafts', granted:true}, {name:'Create 30-60s demos', granted:true}, {name:'Suggest genre/mood tags', granted:true}, {name:'Generate song variations', granted:true}, {name:'Own any IP rights', granted:false}, {name:'Publish or release songs', granted:false}, {name:'Access final masters', granted:false}, {name:'Override human decisions', granted:false}
+  ]},
+];
+
+const qcChecks = [
+  { name:'True Peak', spec:'≤ -1.0 dBTP', status:'pass' },
+  { name:'Integrated LUFS', spec:'-14 LUFS (Streaming)', status:'pass' },
+  { name:'Sample Rate', spec:'44.1 kHz / 24-bit', status:'pass' },
+  { name:'Tail Silence', spec:'≥ 0.5s silence at end', status:'fail' },
+  { name:'Stereo Phase', spec:'No phase cancellation', status:'pass' },
+  { name:'Clipping Detection', spec:'0 clipped samples', status:'pass' },
+];
+
+const roiData = [
+  { genre:'Thai Pop Ballad', value:92, color:'var(--accent-green)' },
+  { genre:"70's Duet", value:78, color:'var(--accent-blue)' },
+  { genre:'R&B Thai', value:65, color:'var(--accent-purple)' },
+  { genre:'Thai Dance Pop', value:58, color:'var(--accent-cyan)' },
+  { genre:'Electronic Fusion', value:41, color:'var(--accent-orange)' },
+];
+
+// ========== VIEW SWITCHING ==========
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  const navMap = { overview:0, pipeline:1, workflow:2, roles:3, analytics:4, qc:5 };
+  document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', i === navMap[view]));
+  if(view === 'analytics') animateBars();
+  if(view === 'workflow') WF.render();
+  if(view === 'pipeline') renderSongTable();
+}
+
+// ========== SONG TABLE ==========
+function renderSongTable(filter) {
+  const tbody = document.getElementById('song-table-body');
+  const filtered = filter && filter !== 'all' ? songs.filter(s => s.status === filter) : songs;
+  tbody.innerHTML = filtered.map((s, i) => {
+    const statusColors = { draft:'var(--text-muted)', approved:'var(--accent-blue)', production:'var(--accent-purple)', mixed:'var(--accent-orange)', mastered:'var(--accent-cyan)', released:'var(--accent-green)' };
+    return `<tr onclick="openSongDetail(${songs.indexOf(s)})">
+      <td><span class="song-id">${s.id}</span></td>
+      <td><div class="song-title-cell">
+        <div class="song-art" style="background:${s.artBg}">${s.art}</div>
+        <div><div class="song-name">${s.title}</div><div class="song-artist">${s.artist}</div></div>
+      </div></td>
+      <td><span class="status-badge ${s.status}">${s.status === 'production' ? 'In Production' : s.status.charAt(0).toUpperCase() + s.status.slice(1)}</span></td>
+      <td style="color:var(--text-secondary); font-size:12px;">${s.genre}</td>
+      <td><div class="progress-bar-cell"><div class="mini-progress"><div class="mini-progress-fill" style="width:${s.progress}%; background:${statusColors[s.status]}"></div></div></div></td>
+      <td style="font-family:'Space Mono',monospace; font-size:12px; color:var(--text-muted);">${s.bpm}</td>
+    </tr>`;
+  }).join('');
+}
+function filterSongs(f) { renderSongTable(f); }
+
+// ========== SONG DETAIL MODAL ==========
+function openSongDetail(idx) {
+  const s = songs[idx];
+  document.getElementById('modal-song-id').textContent = s.id;
+  document.getElementById('modal-song-title').textContent = s.title + ' — ' + s.artist;
+  document.getElementById('modal-details').innerHTML = `
+    <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value"><span class="status-badge ${s.status}">${s.status === 'production' ? 'In Production' : s.status.charAt(0).toUpperCase() + s.status.slice(1)}</span></div></div>
+    <div class="detail-item"><div class="detail-label">Genre</div><div class="detail-value">${s.genre}</div></div>
+    <div class="detail-item"><div class="detail-label">Key</div><div class="detail-value">${s.key}</div></div>
+    <div class="detail-item"><div class="detail-label">Progress</div><div class="detail-value">${s.progress}%</div></div>
+  `;
+  document.getElementById('modal-dna-tags').innerHTML = `
+    <div class="dna-tag"><span class="dna-tag-label">BPM</span><span class="dna-tag-value">${s.bpm}</span></div>
+    <div class="dna-tag"><span class="dna-tag-label">KEY</span><span class="dna-tag-value">${s.key}</span></div>
+    <div class="dna-tag"><span class="dna-tag-label">MOOD</span><span class="dna-tag-value">${s.mood}</span></div>
+    <div class="dna-tag"><span class="dna-tag-label">ENERGY</span><span class="dna-tag-value">${s.energy}/10</span></div>
+  `;
+  document.getElementById('modal-commits').innerHTML = (s._commits || commits).map(c => `
+    <div class="commit-item">
+      <span class="commit-hash">${c.hash}</span>
+      <span class="commit-msg">${c.msg}</span>
+      <span class="commit-time">${c.time}</span>
+    </div>
+  `).join('');
+  document.getElementById('song-modal').classList.add('active');
+}
+function closeSongModal() { document.getElementById('song-modal').classList.remove('active'); }
+document.getElementById('song-modal').addEventListener('click', function(e) { if(e.target === this) closeSongModal(); });
+
+// ========== ROLES ==========
+function renderRoles() {
+  const sidebar = document.getElementById('roles-sidebar');
+  const panels = document.getElementById('role-panels');
+  sidebar.innerHTML = roles.map((r, i) => `
+    <button class="role-tab ${i===0?'active':''}" onclick="selectRole(${i})">
+      <div class="role-tab-icon" style="background:${r.bg}">${r.icon}</div>
+      <div><div class="role-tab-name">${r.name}</div><div class="role-tab-desc">${r.desc}</div></div>
+    </button>
+  `).join('');
+  panels.innerHTML = roles.map((r, i) => `
+    <div class="role-detail-panel ${i===0?'active':''}" id="role-panel-${i}">
+      <div class="role-detail-title">${r.icon} ${r.name}</div>
+      <div class="role-detail-subtitle">${r.desc}</div>
+      <div class="permissions-grid">
+        ${r.permissions.map(p => `
+          <div class="permission-item">
+            <span class="perm-icon ${p.granted?'perm-granted':'perm-denied'}">${p.granted?'✓':'✕'}</span>
+            <span style="color:${p.granted?'var(--text-primary)':'var(--text-muted)'}">${p.name}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+function selectRole(idx) {
+  document.querySelectorAll('.role-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.role-detail-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+}
+
+// ========== QC ==========
+function renderQC() {
+  document.getElementById('qc-tech-items').innerHTML = qcChecks.map(c => `
+    <div class="qc-item">
+      <div class="qc-item-left">
+        <span class="perm-icon">${c.status==='pass'?'✅':'❌'}</span>
+        <div><div class="qc-item-name">${c.name}</div><div class="qc-item-spec">${c.spec}</div></div>
+      </div>
+      <div class="qc-badge ${c.status}">${c.status.toUpperCase()}</div>
+    </div>
+  `).join('');
+}
+
+// ========== ROI CHART ==========
+function renderROI() {
+  document.getElementById('roi-chart').innerHTML = roiData.map(d => `
+    <div class="chart-bar-row">
+      <div class="chart-bar-label">${d.genre}</div>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="width:0%; background:${d.color};" data-width="${d.value}%">
+          <span class="chart-bar-value">${d.value}%</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function animateBars() {
+  setTimeout(() => {
+    document.querySelectorAll('.chart-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.width;
+    });
+  }, 100);
+}
+
+// ========== COUNTER ANIMATION ==========
+function animateCounters() {
+  document.querySelectorAll('.stat-number[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count);
+    let current = 0;
+    const step = Math.ceil(target / 60);
+    const timer = setInterval(() => {
+      current += step;
+      if(current >= target) { current = target; clearInterval(timer); }
+      el.textContent = current.toLocaleString();
+    }, 20);
+  });
+}
+
+// ═══════════════════════════════════════
+// WORKFLOW ENGINE — 9-Step Stage-Gate
+// ═══════════════════════════════════════
+const WF = (()=>{
+const STEPS=[
+  {id:1,ph:'pre',l:'Lyrics & Ideation',i:'✍️',r:'Lyricist'},
+  {id:2,ph:'pre',l:'AI Demo',i:'🤖',r:'AI Sandbox'},
+  {id:3,ph:'pre',l:'Registration',i:'📋',r:'Lyricist / Producer'},
+  {id:4,ph:'prod',l:'Arrangement',i:'🎵',r:'Arranger (Team A)'},
+  {id:5,ph:'prod',l:'Musician Rec',i:'🎸',r:'Musician'},
+  {id:6,ph:'prod',l:'Vocal Rec',i:'🎤',r:'Recording Eng (B)'},
+  {id:7,ph:'post',l:'Mixing',i:'🎛️',r:'Mix Engineer (C)'},
+  {id:8,ph:'post',l:'Mastering',i:'💎',r:'Mastering Eng (D)'},
+  {id:9,ph:'rel',l:'Rights & Release',i:'🚀',r:'Admin / Legal'},
+];
+const PH={pre:'Pre-Production',prod:'Production',post:'Post-Production',rel:'Release'};
+let s=0,d={},ai=false,mf=[],ar=false,qc=null,sg={label:0,composer:0,artist:0,producer:0},g={},cm=[];
+let idC=420;
+function gid(){idC++;return'NV-2026-0'+idC}
+function hsh(){return Math.random().toString(36).substr(2,7)}
+function ts(){return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}
+function toast(m,t='info'){const e=document.createElement('div');e.className='wf-toast '+(t==='success'?'ok':t);e.textContent=m;document.getElementById('wf-toasts').appendChild(e);setTimeout(()=>e.remove(),3500)}
+function wv(n){return Array.from({length:n},()=>Math.random()*80+10)}
+function allSig(){return Object.values(sg).every(Boolean)}
+
+function reset(){s=0;d={};ai=false;mf=[];ar=false;qc=null;sg={label:0,composer:0,artist:0,producer:0};g={};cm=[];render();toast('Workflow reset','info')}
+function go(n){if(n>s)return;s=n;render()}
+function next(){s++;render();window.scrollTo({top:document.getElementById('view-workflow').offsetTop+100,behavior:'smooth'})}
+
+function render(){
+  // Rail
+  document.getElementById('wf-rail-c').innerHTML=s>=9?'':`<div class="wf-rail">${STEPS.map((st,i)=>`<div class="wf-step ${st.id<s+1?'done':st.id===s+1?'active':''}" ${st.id<=s+1?`onclick="WF.go(${st.id-1})"`:''} ><div class="wf-dot">${st.id<s+1?'✓':st.i}</div><div class="wf-lbl">${st.l}</div></div>`).join('')}</div>`;
+  // Phases
+  const cp=s<9?STEPS[s].ph:'rel';
+  document.getElementById('wf-phases-c').innerHTML=s>=9?'':`<div class="wf-phases">${['pre','prod','post','rel'].map(p=>`<div class="wf-phase ${p} ${p===cp?'current':''}">${PH[p]}</div>`).join('')}</div>`;
+  // Body
+  const C=document.getElementById('wf-body');
+  if(s>=9){C.innerHTML=compH();return}
+  const st=STEPS[s];
+  C.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">STEP ${st.id} / 9 — ${PH[st.ph]}</div><div style="font-family:'Sora';font-size:26px;font-weight:800;letter-spacing:-.5px">${st.i} ${st.l}</div></div><button class="wf-btn wf-btn-s" onclick="WF.reset()">↺ Reset</button></div><div style="display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:8px;background:var(--bg-card);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--accent-purple);margin-bottom:20px">${st.i} Active Role: ${st.r}</div>${body(s)}`;
+}
+
+function cmtH(){if(!cm.length)return'';return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">📜 Version History</div><span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted)">${cm.length} commits</span></div><div class="wf-card-b">${cm.slice().reverse().map(c=>`<div class="commit-item"><span class="commit-hash">${c.hash}</span><span class="commit-msg">${c.msg}</span><span class="commit-time">${c.time}</span></div>`).join('')}</div></div>`}
+function gateH(gs){return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">🚧 Stage Gates</div></div><div class="wf-card-b">${gs.map(([k,n])=>`<div class="wf-gate"><div class="wf-gate-i">${g[k]?'✅':'⏳'}</div><div class="wf-gate-nfo"><div class="wf-gate-n">${n}</div></div><div class="wf-gate-st ${g[k]?'pass':'pending'}">${g[k]?'PASS':'PENDING'}</div></div>`).join('')}</div></div>`}
+function compH(){return`<div class="wf-comp"><div class="wf-comp-i">🎉</div><div class="wf-comp-t">Song Released!</div><div class="wf-comp-s">"${d.title}" by ${d.artist} — Full lifecycle complete</div><div class="dna-tags" style="justify-content:center;margin-bottom:20px"><div class="dna-tag"><span class="dna-tag-label">ID</span><span class="dna-tag-value">${d.id}</span></div><div class="dna-tag"><span class="dna-tag-label">BPM</span><span class="dna-tag-value">${d.bpm}</span></div><div class="dna-tag"><span class="dna-tag-label">KEY</span><span class="dna-tag-value">${d.key}</span></div><div class="dna-tag"><span class="dna-tag-label">COMMITS</span><span class="dna-tag-value">${cm.length}</span></div></div>${cmtH()}<button class="wf-btn wf-btn-p wf-btn-lg" onclick="WF.reset()" style="margin-top:16px">↺ Start New Song</button></div>`}
+
+function body(n){switch(n){
+// ── 1. LYRICS ──
+case 0:return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">📝 Lyrics & Concept</div></div><div class="wf-card-b">
+  <div class="wf-row"><div class="wf-fg"><label class="wf-fl">Song Title *</label><input class="wf-fi" id="wT" placeholder="Song title..." value="${d.title||''}"></div><div class="wf-fg"><label class="wf-fl">Artist *</label><input class="wf-fi" id="wA" placeholder="Artist name..." value="${d.artist||''}"></div></div>
+  <div class="wf-row"><div class="wf-fg"><label class="wf-fl">Genre</label><select class="wf-sl" id="wG"><option>Thai Pop Ballad</option><option>70's Duet Revival</option><option>Thai Dance Pop</option><option>R&B Thai</option><option>Thai Indie</option><option>Electronic Fusion</option></select></div><div class="wf-fg"><label class="wf-fl">Mood</label><select class="wf-sl" id="wM"><option>Melancholy</option><option>Energetic</option><option>Nostalgic</option><option>Dreamy</option><option>Romantic</option><option>Futuristic</option></select></div></div>
+  <div class="wf-fg"><label class="wf-fl">Lyrics *</label><textarea class="wf-ta" id="wL" placeholder="Write lyrics or concept notes...">${d.lyrics||''}</textarea></div>
+  <div class="wf-fg"><label class="wf-fl">Reference Track (optional)</label><div class="wf-drop" onclick="this.querySelector('input').click()"><div class="wf-drop-i">📎</div><div class="wf-drop-t">Attach reference track</div><div class="wf-drop-h">.mp3 / .wav</div><input type="file" accept=".mp3,.wav" style="display:none" onchange="WF.ref(this)"></div></div>
+</div><div class="wf-card-f"><div class="wf-hint">* Required for lyrics_present gate</div><button class="wf-btn wf-btn-p wf-btn-lg" onclick="WF.submitLyrics()">Next → AI Demo 🤖</button></div></div>
+${gateH([['lyr','Lyrics Present'],['ai','AI Demo Generated'],['dna','Sonic DNA Extracted']])}`;
+
+// ── 2. AI DEMO ──
+case 1:return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">🤖 AI Sandbox — Demo Generation</div><span style="font-size:10px;font-family:'Space Mono',monospace;color:var(--text-muted)">NO IP OWNERSHIP</span></div><div class="wf-card-b">
+  <div class="wf-ai"><div class="wf-ai-big" id="aiIco">${ai?'✅':'🤖'}</div><div class="wf-ai-tt" id="aiTt">${ai?'Demo Generated':'Ready'}</div><div class="wf-ai-sub" id="aiSb">${ai?'Sonic DNA extracted':'Suno / Mureka API stub'}</div>
+    ${!ai?`<div class="wf-ai-bar"><div class="wf-ai-bar-f" id="aiBar"></div></div><div style="margin-top:16px"><button class="wf-btn wf-btn-p wf-btn-lg" onclick="WF.runAI()">🎵 Generate Demo</button></div>`:''}
+    ${ai?`<div style="margin-top:14px;text-align:left"><div class="wf-fl" style="margin-bottom:5px">Sonic DNA</div><div class="dna-tags"><div class="dna-tag"><span class="dna-tag-label">BPM</span><span class="dna-tag-value">${d.bpm}</span></div><div class="dna-tag"><span class="dna-tag-label">KEY</span><span class="dna-tag-value">${d.key}</span></div><div class="dna-tag"><span class="dna-tag-label">MOOD</span><span class="dna-tag-value">${d.mood}</span></div><div class="dna-tag"><span class="dna-tag-label">ENERGY</span><span class="dna-tag-value">${d.energy}/10</span></div></div><div style="margin-top:10px"><div class="wf-fl">Waveform</div><div class="wf-wave">${wv(80).map(h=>`<div class="wf-wave-b" style="height:${h}%;background:var(--accent-blue)"></div>`).join('')}</div></div></div>`:''}
+  </div>
+  <div class="wf-gate"><div class="wf-gate-i">ℹ️</div><div class="wf-gate-nfo"><div class="wf-gate-n">AI Prompt Logging Active</div><div class="wf-gate-sp">All prompts stored as Song Object metadata</div></div><div class="wf-gate-st pass">ACTIVE</div></div>
+</div><div class="wf-card-f"><button class="wf-btn wf-btn-s" onclick="WF.go(0)">← Back</button><button class="wf-btn wf-btn-p wf-btn-lg" ${!ai?'disabled':''} onclick="WF.next()">Next → Register 📋</button></div></div>`;
+
+// ── 3. REGISTER ──
+case 2:return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">📋 Register Song Object</div><span class="status-badge approved">DRAFT → REGISTERED</span></div><div class="wf-card-b">
+  <div style="text-align:center;padding:20px 0"><div style="font-size:44px;margin-bottom:10px">📋</div><div style="font-family:'Sora';font-size:18px;font-weight:700;margin-bottom:14px">Song Object Ready</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:440px;margin:0 auto 16px">${[['Song ID',d.id||'—','var(--accent-blue)'],[d.title||'—','Title','var(--text-primary)'],[d.artist||'—','Artist','var(--text-primary)']].map(([v,l,c])=>`<div style="background:var(--bg-elevated);border-radius:var(--radius-sm);padding:12px;text-align:center"><div style="font-size:13px;font-weight:700;color:${c}">${v}</div><div style="font-size:8px;color:var(--text-muted);margin-top:2px">${l}</div></div>`).join('')}</div>
+    <div class="dna-tags" style="justify-content:center"><div class="dna-tag"><span class="dna-tag-label">BPM</span><span class="dna-tag-value">${d.bpm||'—'}</span></div><div class="dna-tag"><span class="dna-tag-label">KEY</span><span class="dna-tag-value">${d.key||'—'}</span></div><div class="dna-tag"><span class="dna-tag-label">MOOD</span><span class="dna-tag-value">${d.mood||'—'}</span></div></div>
+  </div>
+  ${[['Lyrics Present','lyr'],['AI Demo Generated','ai'],['Sonic DNA Extracted','dna']].map(([n,k])=>`<div class="wf-gate"><div class="wf-gate-i">✅</div><div class="wf-gate-nfo"><div class="wf-gate-n">${n}</div></div><div class="wf-gate-st pass">PASS</div></div>`).join('')}
+</div><div class="wf-card-f"><button class="wf-btn wf-btn-s" onclick="WF.go(1)">← Back</button><button class="wf-btn wf-btn-g wf-btn-lg" onclick="WF.register()">✓ Register Song Object</button></div></div>${cmtH()}`;
+
+// ── 4. ARRANGEMENT ──
+case 3:return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">🎵 Arrangement — Team A</div><span class="status-badge" style="background:rgba(167,139,250,.12);color:var(--accent-purple)">REGISTERED → ARRANGED</span></div><div class="wf-card-b">
+  <div class="wf-fg"><label class="wf-fl">Arrangement File</label><div class="wf-drop ${g.arr?'ok':''}" onclick="WF.simUp('arr','Arrangement v1 committed')"><div class="${g.arr?'wf-drop-f':'wf-drop-i'}">${g.arr?'✅ arrangement_v1.logicx':'🎵'}</div>${!g.arr?'<div class="wf-drop-t">Upload arrangement</div><div class="wf-drop-h">.logicx / .als / .ptx</div>':''}</div></div>
+  <div class="wf-fg"><label class="wf-fl">Commit Message *</label><input class="wf-fi" id="arrMsg" placeholder="e.g. Added strings and rhythm" value="${g.ver?'Arrangement v1 — full structure':''}"></div>
+  ${!g.ver&&g.arr?`<button class="wf-btn wf-btn-s" onclick="WF.commit()">📌 Commit Version</button>`:''}
+</div><div class="wf-card-f"><div class="wf-hint">Both gates required</div><button class="wf-btn wf-btn-g wf-btn-lg" ${!(g.arr&&g.ver)?'disabled':''} onclick="WF.adv()">Advance → Musician 🎸</button></div></div>${gateH([['arr','Arrangement Uploaded'],['ver','Version Committed']])}${cmtH()}`;
+
+// ── 5. MUSICIAN ──
+case 4:return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">🎸 Musician Recording</div><span style="font-size:10px;font-family:'Space Mono',monospace;color:var(--text-muted)">FORMAT AUTO-GATE</span></div><div class="wf-card-b">
+  <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px">Upload instrument tracks. Must be WAV 48kHz — other formats rejected.</p>
+  <div class="wf-row"><div class="wf-fg"><select class="wf-sl" id="musF"><option value="wav48">WAV 48kHz ✓</option><option value="wav44">WAV 44.1kHz ✗</option><option value="mp3">MP3 320k ✗</option></select></div><div class="wf-fg"><input class="wf-fi" id="musN" placeholder="Track name"></div></div>
+  <button class="wf-btn wf-btn-s" onclick="WF.musUp()" style="margin-bottom:14px">⬆ Upload Track</button>
+  ${mf.map(f=>`<div class="wf-gate"><div class="wf-gate-i">${f.ok?'✅':'❌'}</div><div class="wf-gate-nfo"><div class="wf-gate-n">${f.n}</div><div class="wf-gate-sp">${f.f}</div></div><div class="wf-gate-st ${f.ok?'pass':'fail'}">${f.ok?'ACCEPTED':'REJECTED'}</div></div>`).join('')}
+</div><div class="wf-card-f"><div class="wf-hint">≥1 valid track required</div><button class="wf-btn wf-btn-g wf-btn-lg" ${!mf.some(f=>f.ok)?'disabled':''} onclick="WF.next()">Next → Vocal 🎤</button></div></div>${cmtH()}`;
+
+// ── 6. VOCAL ──
+case 5:return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">🎤 Vocal Recording — Team B</div><span class="status-badge" style="background:rgba(246,173,85,.12);color:var(--accent-orange)">ARRANGED → RECORDED</span></div><div class="wf-card-b">
+  <div class="wf-fg"><div class="wf-drop ${g.voc?'ok':''}" onclick="WF.simUp('voc','Vocal take uploaded')"><div class="${g.voc?'wf-drop-f':'wf-drop-i'}">${g.voc?'✅ vocal_final.wav':'🎤'}</div>${!g.voc?'<div class="wf-drop-t">Upload vocal</div><div class="wf-drop-h">WAV 48kHz</div>':''}</div></div>
+  ${g.voc?`<div class="wf-card" style="border-color:rgba(167,139,250,.15)"><div class="wf-card-h"><div class="wf-card-t" style="color:var(--accent-purple)">🔌 Nova Artist OS</div><span style="font-size:10px;font-family:'Space Mono',monospace;color:var(--text-muted)">PLUGIN</span></div><div class="wf-card-b">${!ar?`<div style="text-align:center"><button class="wf-btn wf-btn-p" onclick="WF.artOS()">Run Vocal Quality Check</button></div>`:
+  `${[['Pitch','94','var(--accent-green)','≥85%'],['Timing','91','var(--accent-green)','≥80%'],['Tonal','88','var(--accent-green)','≥75%'],['Breath','82','var(--accent-cyan)','≥70%']].map(([l,v,c,sp])=>`<div class="wf-qm"><div class="wf-qm-l">${l}</div><div class="wf-qm-t"><div class="wf-qm-f" style="width:${v}%;background:${c}"><span class="wf-qm-v">${v}%</span></div></div><div class="wf-qm-s">${sp}</div></div>`).join('')}
+  <div class="wf-gate" style="margin-top:8px"><div class="wf-gate-i">✅</div><div class="wf-gate-nfo"><div class="wf-gate-n">Artist OS: PASS</div></div><div class="wf-gate-st pass">PASS</div></div>`}</div></div>`:''}
+</div><div class="wf-card-f"><div class="wf-hint">Vocal + Artist OS required</div><button class="wf-btn wf-btn-g wf-btn-lg" ${!(g.voc&&g.fmt)?'disabled':''} onclick="WF.adv()">Advance → Mixing 🎛️</button></div></div>${cmtH()}`;
+
+// ── 7. MIXING ──
+case 6:return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">🎛️ Mixing — Team C</div><span class="status-badge" style="background:rgba(79,209,197,.12);color:var(--accent-cyan)">RECORDED → MIXED</span></div><div class="wf-card-b">
+  <div class="wf-gate ${!g.stems?'click':''}" ${!g.stems?'onclick="WF.simGate(\'stems\',\'Stems loaded into session\')"':''}><div class="wf-gate-i">${g.stems?'✅':'⏳'}</div><div class="wf-gate-nfo"><div class="wf-gate-n">Load All Stems</div><div class="wf-gate-sp">Arrangement + ${mf.filter(f=>f.ok).length} tracks + vocal${!g.stems?' — click to load':''}</div></div><div class="wf-gate-st ${g.stems?'pass':'pending'}">${g.stems?'PASS':'CLICK'}</div></div>
+  ${g.stems?`<div style="margin-top:12px"><div class="wf-fl">Mix Preview</div><div class="wf-wave">${wv(100).map(h=>`<div class="wf-wave-b" style="height:${h}%;background:var(--accent-cyan)"></div>`).join('')}</div></div>`:''}
+  <div class="wf-fg" style="margin-top:12px"><div class="wf-drop ${g.mixUp?'ok':''}" onclick="WF.simUp('mixUp','Final mix delivered')"><div class="${g.mixUp?'wf-drop-f':'wf-drop-i'}">${g.mixUp?'✅ final_mix.wav':'🎛️'}</div>${!g.mixUp?'<div class="wf-drop-t">Upload final mix</div>':''}</div></div>
+</div><div class="wf-card-f"><button class="wf-btn wf-btn-g wf-btn-lg" ${!(g.stems&&g.mixUp)?'disabled':''} onclick="WF.adv()">Advance → Mastering 💎</button></div></div>${cmtH()}`;
+
+// ── 8. MASTERING ──
+case 7:return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">💎 Mastering — Team D</div><span class="status-badge" style="background:rgba(251,191,36,.12);color:var(--accent-yellow)">MIXED → MASTERED</span></div><div class="wf-card-b">
+  <div class="wf-drop ${qc?'ok':''}" onclick="WF.master()"><div class="${qc?'wf-drop-f':'wf-drop-i'}">${qc?'✅ master_final.wav uploaded':'💎'}</div>${!qc?'<div class="wf-drop-t">Upload master (triggers QC)</div>':''}</div>
+</div></div>
+${qc?`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">🔬 Gate 1: Technical QC</div><span style="font-family:'Space Mono',monospace;font-size:10px;color:${qc.ok?'var(--accent-green)':'var(--accent-red)'}">${qc.ok?'ALL PASS':'FAILURE'}</span></div><div class="wf-card-b">
+  ${qc.checks.map(c=>`<div class="wf-qm"><div class="wf-qm-l">${c.n}</div><div class="wf-qm-t"><div class="wf-qm-f" style="width:${c.pct}%;background:${c.p?'var(--accent-green)':'var(--accent-red)'}"><span class="wf-qm-v">${c.v}</span></div></div><div class="wf-qm-s">${c.s}</div></div>`).join('')}
+  ${!qc.ok?`<button class="wf-btn wf-btn-d" onclick="WF.reQC()" style="margin-top:8px">🔄 Fix & Re-run QC</button>`:''}
+</div></div>
+<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">🎨 Gate 2: Creative QC (Head Producer)</div></div><div class="wf-card-b">
+  <div class="wf-gate click" onclick="WF.cqc('emo')"><div class="wf-gate-i">${g.cEmo?'✅':'⏳'}</div><div class="wf-gate-nfo"><div class="wf-gate-n">Emotional Standards</div><div class="wf-gate-sp">Click to approve</div></div><div class="wf-gate-st ${g.cEmo?'pass':'pending'}">${g.cEmo?'APPROVED':'PENDING'}</div></div>
+  <div class="wf-gate click" onclick="WF.cqc('qual')"><div class="wf-gate-i">${g.cQual?'✅':'⏳'}</div><div class="wf-gate-nfo"><div class="wf-gate-n">Artistic Quality</div><div class="wf-gate-sp">Click to approve</div></div><div class="wf-gate-st ${g.cQual?'pass':'pending'}">${g.cQual?'APPROVED':'PENDING'}</div></div>
+</div></div>`:''
+}
+<div class="wf-card"><div class="wf-card-f"><button class="wf-btn wf-btn-g wf-btn-lg" ${!(qc&&qc.ok&&g.cEmo&&g.cQual)?'disabled':''} onclick="WF.adv()">Advance → Release 🚀</button></div></div>${cmtH()}`;
+
+// ── 9. RIGHTS ──
+case 8:return`<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">⚖️ Smart Split Sheet</div><span class="status-badge released">MASTERED → RELEASED</span></div><div class="wf-card-b">
+  <div class="split-bar"><div class="split-segment" style="width:40%;background:var(--accent-blue)">40%</div><div class="split-segment" style="width:25%;background:var(--accent-purple)">25%</div><div class="split-segment" style="width:20%;background:var(--accent-cyan)">20%</div><div class="split-segment" style="width:15%;background:var(--accent-orange)">15%</div></div>
+  <div class="split-legend" style="margin-bottom:16px"><div class="split-legend-item"><div class="split-legend-dot" style="background:var(--accent-blue)"></div>Label 40%</div><div class="split-legend-item"><div class="split-legend-dot" style="background:var(--accent-purple)"></div>Composer 25%</div><div class="split-legend-item"><div class="split-legend-dot" style="background:var(--accent-cyan)"></div>Artist 20%</div><div class="split-legend-item"><div class="split-legend-dot" style="background:var(--accent-orange)"></div>Producer 15%</div></div>
+  <div class="wf-fl" style="margin:14px 0 6px">Digital Signatures (click to sign)</div>
+  ${[['label','📋 Record Label'],['composer','✍️ Composer'],['artist','🎤 Artist'],['producer','🎧 Producer']].map(([k,n])=>`<div class="wf-sig" onclick="WF.sign('${k}')"><span class="wf-sig-n">${n}</span><span class="wf-sig-s ${sg[k]?'y':'n'}">${sg[k]?'✓ Signed':'Click to Sign'}</span></div>`).join('')}
+</div></div>
+<div class="wf-card"><div class="wf-card-h"><div class="wf-card-t">🚧 Release Gates</div></div><div class="wf-card-b">
+  <div class="wf-gate"><div class="wf-gate-i">${g.splitOk?'✅':'⏳'}</div><div class="wf-gate-nfo"><div class="wf-gate-n">Split Sheet Complete</div></div><div class="wf-gate-st ${g.splitOk?'pass':'pending'}">${g.splitOk?'PASS':'PENDING'}</div></div>
+  <div class="wf-gate"><div class="wf-gate-i">${allSig()?'✅':'⏳'}</div><div class="wf-gate-nfo"><div class="wf-gate-n">All Signatures</div><div class="wf-gate-sp">${Object.values(sg).filter(Boolean).length}/4</div></div><div class="wf-gate-st ${allSig()?'pass':'pending'}">${allSig()?'PASS':'PENDING'}</div></div>
+  <div class="wf-gate ${!g.chain?'click':''}" ${!g.chain?'onclick="WF.chain()"':''}><div class="wf-gate-i">${g.chain?'✅':'⏳'}</div><div class="wf-gate-nfo"><div class="wf-gate-n">Chain of Title</div><div class="wf-gate-sp">${g.chain?'Verified':'Click to verify'}</div></div><div class="wf-gate-st ${g.chain?'pass':'pending'}">${g.chain?'PASS':'CLICK'}</div></div>
+</div></div>
+<div class="wf-card"><div class="wf-card-f"><button class="wf-btn wf-btn-g wf-btn-lg" ${!(allSig()&&g.splitOk&&g.chain)?'disabled':''} onclick="WF.release()">🚀 Release Song</button></div></div>${cmtH()}`;
+}}
+
+// ── ACTIONS ──
+function ref(inp){if(inp.files.length){const p=inp.closest('.wf-drop');p.classList.add('ok');p.innerHTML=`<div class="wf-drop-f">✅ ${inp.files[0].name}</div>`;toast('Reference attached','ok')}}
+function submitLyrics(){const t=document.getElementById('wT')?.value.trim(),a=document.getElementById('wA')?.value.trim(),genre=document.getElementById('wG')?.value,mood=document.getElementById('wM')?.value,l=document.getElementById('wL')?.value.trim();if(!t){toast('Title required','err');return}if(!a){toast('Artist required','err');return}if(!l){toast('Lyrics required — gate: lyrics_present','err');return}d={...d,title:t,artist:a,genre:genre,mood:mood,lyrics:l,id:gid()};g.lyr=true;cm.push({hash:hsh(),msg:'Lyrics: "'+t+'"',time:ts()});toast('Lyrics saved','ok');next()}
+function runAI(){const bar=document.getElementById('aiBar');if(bar)bar.style.width='100%';const ico=document.getElementById('aiIco'),tt=document.getElementById('aiTt'),sb=document.getElementById('aiSb');if(tt)tt.textContent='Generating...';if(sb)sb.textContent='Calling Suno API stub...';let i=0;const em=['🎵','🎶','🎸','🎹','🎷','🤖','✨'];const iv=setInterval(()=>{if(ico)ico.textContent=em[i%em.length];i++},250);setTimeout(()=>{clearInterval(iv);const bpms=[78,88,92,98,105,112,120,128,135];const keys=['C Maj','D Maj','Eb Min','F Min','F# Min','G Maj','A Min','Bb Min'];d.bpm=bpms[Math.floor(Math.random()*bpms.length)];d.key=keys[Math.floor(Math.random()*keys.length)];d.energy=Math.floor(Math.random()*7)+3;ai=true;g.ai=true;g.dna=true;cm.push({hash:hsh(),msg:'AI Demo generated',time:ts()});cm.push({hash:hsh(),msg:'Sonic DNA: BPM='+d.bpm+' KEY='+d.key,time:ts()});toast('AI Demo generated','ok');render()},2200)}
+function register(){cm.push({hash:hsh(),msg:'Song Object '+d.id+' → REGISTERED',time:ts()});const arts=['🌙','🎷','💃','✨','🌃','❤️','🌆','🍂','🎵','💎'];const bgs=['linear-gradient(135deg,#1a1040,#2d1b69)','linear-gradient(135deg,#1a3040,#0d4a4a)','linear-gradient(135deg,#3a1040,#691b4a)','linear-gradient(135deg,#102040,#1b3069)','linear-gradient(135deg,#302010,#4a3520)'];songs.push({id:d.id,title:d.title,artist:d.artist,status:'approved',genre:d.genre,bpm:d.bpm,key:d.key,mood:d.mood,energy:d.energy,progress:20,art:arts[Math.floor(Math.random()*arts.length)],artBg:bgs[Math.floor(Math.random()*bgs.length)],_commits:[...cm]});toast('"'+d.title+'" registered & added to Pipeline','ok');next()}
+function simUp(k,msg){if(g[k])return;g[k]=true;cm.push({hash:hsh(),msg:msg,time:ts()});toast('Uploaded','ok');render()}
+function simGate(k,msg){g[k]=true;cm.push({hash:hsh(),msg:msg,time:ts()});toast('Gate passed','ok');render()}
+function commit(){const m=document.getElementById('arrMsg')?.value.trim();if(!m){toast('Commit message required','err');return}g.ver=true;cm.push({hash:hsh(),msg:m,time:ts()});toast('Version committed','ok');render()}
+function adv(){cm.push({hash:hsh(),msg:'Status → '+STEPS[s+1]?.l,time:ts()});const so=songs.find(x=>x.id===d.id);if(so){const prog=[20,20,20,35,40,55,72,88,100];so.progress=prog[s+1]||so.progress;const stat=['draft','approved','approved','production','production','production','mixed','mastered','released'];so.status=stat[s+1]||so.status;so._commits=[...cm]}toast('Advanced to '+(STEPS[s+1]?.l||'next'),'ok');next()}
+function musUp(){const f=document.getElementById('musF').value,n=document.getElementById('musN')?.value.trim()||('Track '+(mf.length+1)),ok=f==='wav48';mf.push({n:n,f:{wav48:'WAV 48kHz',wav44:'WAV 44.1kHz',mp3:'MP3 320k'}[f],ok:ok});if(ok){cm.push({hash:hsh(),msg:'Track "'+n+'" accepted',time:ts()});toast('"'+n+'" accepted','ok')}else toast('"'+n+'" REJECTED — must be WAV 48kHz','err');render()}
+function artOS(){ar=true;g.fmt=true;cm.push({hash:hsh(),msg:'Nova Artist OS — vocal check passed',time:ts()});toast('Vocal quality: PASS','ok');render()}
+function master(){if(qc)return;qc={ok:false,checks:[{n:'True Peak',v:'-1.2dBTP',s:'≤-1.0',pct:88,p:true},{n:'LUFS',v:'-14.1',s:'-14±1',pct:92,p:true},{n:'Sample Rate',v:'48kHz',s:'48kHz',pct:100,p:true},{n:'Tail Silence',v:'0.2s',s:'≥0.5s',pct:40,p:false},{n:'Phase',v:'Clean',s:'OK',pct:95,p:true}]};g.splitOk=true;cm.push({hash:hsh(),msg:'Master uploaded — QC triggered',time:ts()});toast('QC: Tail silence FAILED','warn');render()}
+function reQC(){qc.checks[3]={n:'Tail Silence',v:'0.6s',s:'≥0.5s',pct:85,p:true};qc.ok=true;cm.push({hash:hsh(),msg:'Master re-uploaded — QC all pass',time:ts()});toast('QC ALL PASS','ok');render()}
+function cqc(t){g[t==='emo'?'cEmo':'cQual']=!g[t==='emo'?'cEmo':'cQual'];if(g.cEmo&&g.cQual)cm.push({hash:hsh(),msg:'Creative QC approved',time:ts()});render()}
+function sign(w){sg[w]=1;cm.push({hash:hsh(),msg:'Split sheet signed: '+w,time:ts()});toast(w+' signed','ok');render()}
+function chain(){g.chain=true;cm.push({hash:hsh(),msg:'Chain of title verified',time:ts()});toast('Chain verified','ok');render()}
+function release(){cm.push({hash:hsh(),msg:'🚀 RELEASED — "'+d.title+'"',time:ts()});const so=songs.find(x=>x.id===d.id);if(so){so.status='released';so.progress=100;so._commits=[...cm]}toast('🎉 "'+d.title+'" RELEASED!','ok');s=9;render()}
+
+return{render,reset,go,next,ref,submitLyrics,runAI,register,simUp,simGate,commit,adv,musUp,artOS,master,reQC,cqc,sign,chain,release}
+})();
+
+// ========== INIT ==========
+renderSongTable();
+renderRoles();
+renderQC();
+renderROI();
+animateCounters();
+setTimeout(animateBars, 500);
+</script>
+
+</body>
+</html>
