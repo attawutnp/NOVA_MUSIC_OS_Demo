@@ -1,6 +1,10 @@
 # NOVA Music OS - Demo
 
-A React-based music workspace management application built with Vite and TypeScript.
+A React-based music workspace management application built with Vite and TypeScript. Includes API integration notebooks for Mureka and RoEx music AI services.
+
+## Live Demo
+
+Deployed via GitHub Pages with the static workflow.
 
 ## Tech Stack
 
@@ -45,18 +49,34 @@ npm run preview
 
 ```
 src/
-  main.tsx              # App entry point
-  styles.css            # Global styles
-  styles/               # Theme & font styles
+  main.tsx                # App entry point
+  styles.css              # Global styles
+  styles/                 # Theme & font styles
   app/
-    App.tsx             # Root app component
-    routes.tsx          # Route definitions
-    components/         # Reusable components
-      workspace/        # Workspace-specific components
-    pages/              # Page components
-    services/           # Data services
-    utils/              # Utility functions
+    App.tsx               # Root app component
+    routes.tsx            # Route definitions
+    components/           # Reusable components
+      workspace/          # Workspace-specific components
+    pages/                # Page components (DemoPage, WorkspacePage)
+    services/             # Data services
+    utils/                # Utility functions & role permissions
+
+Yue_module/               # Standalone HTML prototypes
+ipynb_Mureka_RoEx_API/    # API integration notebooks & references
+  *.ipynb                 # Jupyter notebooks for API testing
+  *.md                    # API reference & handoff docs
+  openapi.json            # OpenAPI specification
+  test_stems/             # Sample audio stems for testing
 ```
+
+## API Integration
+
+The `ipynb_Mureka_RoEx_API/` directory contains Jupyter notebooks and documentation for integrating with music AI APIs (Mureka, RoEx), including:
+
+- API reference documentation
+- Test notebooks for endpoint validation
+- OpenAPI specification
+- Sample audio test files
 
 ## License
 
